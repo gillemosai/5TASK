@@ -9,12 +9,28 @@ interface EinsteinAvatarProps {
 
 export const EinsteinAvatar: React.FC<EinsteinAvatarProps> = ({ mood, quote }) => {
   const [animateQuote, setAnimateQuote] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     setAnimateQuote(true);
     const timer = setTimeout(() => setAnimateQuote(false), 500);
     return () => clearTimeout(timer);
   }, [quote]);
+
+  // Reset error state if mood changes (trying to load new image)
+  useEffect(() => {
+    setImageError(false);
+  }, [mood]);
+
+  const getEmojiForMood = (m: Mood) => {
+    switch(m) {
+      case Mood.HAPPY: return '😛';
+      case Mood.THINKING: return '🤔';
+      case Mood.EXCITED: return '👍';
+      case Mood.SHOCKED: return '😱';
+      default: return '🧠';
+    }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center p-4 mb-6 relative">
@@ -34,14 +50,27 @@ export const EinsteinAvatar: React.FC<EinsteinAvatarProps> = ({ mood, quote }) =
       {/* Avatar Image Container */}
       <div className="relative w-32 h-32 md:w-40 md:h-40">
         <div className="absolute inset-0 bg-neon-pink rounded-full blur-lg opacity-40 animate-pulse"></div>
-        <img 
-          src={AVATAR_IMAGES[mood]} 
-          alt={`Einstein ${mood}`}
-          className="relative w-full h-full object-cover rounded-full border-4 border-neon-blue shadow-lg z-10 bg-slate-800 transition-all duration-500 ease-in-out"
-        />
+        
+        {imageError ? (
+          /* Fallback Avatar if image fails to load */
+          <div className="relative w-full h-full rounded-full border-4 border-neon-blue shadow-lg z-10 bg-slate-800 flex items-center justify-center overflow-hidden">
+             <div className="absolute inset-0 bg-gradient-to-b from-slate-700 to-slate-900"></div>
+             <span className="text-6xl relative z-10 animate-bounce-slow filter drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
+               {getEmojiForMood(mood)}
+             </span>
+          </div>
+        ) : (
+          /* Actual Image */
+          <img 
+            src={AVATAR_IMAGES[mood]} 
+            alt={`Einstein ${mood}`}
+            onError={() => setImageError(true)}
+            className="relative w-full h-full object-cover rounded-full border-4 border-neon-blue shadow-lg z-10 bg-slate-800 transition-all duration-500 ease-in-out"
+          />
+        )}
         
         {/* Decorative elements */}
-        <div className="absolute -top-2 -right-2 text-2xl animate-bounce-slow">⚛️</div>
+        <div className="absolute -top-2 -right-2 text-2xl animate-bounce-slow z-20">⚛️</div>
       </div>
     </div>
   );

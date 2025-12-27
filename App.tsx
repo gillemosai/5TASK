@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, Trash2, BrainCircuit, Undo2, X } from 'lucide-react';
+import { Plus, Trash2, Undo2, X, Download, Share2 } from 'lucide-react';
 import { Task, Mood, QuoteType } from './types';
 import { QUOTES } from './constants';
 import { EinsteinAvatar } from './components/EinsteinAvatar';
@@ -10,20 +10,47 @@ const MAX_TASKS = 5;
 const App: React.FC = () => {
   // --- State ---
   const [tasks, setTasks] = useState<Task[]>(() => {
-    const saved = localStorage.getItem('5task_data');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('5task_data');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error("Erro ao carregar tarefas", e);
+      return [];
+    }
   });
   
   const [newTaskText, setNewTaskText] = useState('');
   const [mood, setMood] = useState<Mood>(Mood.THINKING);
   const [quote, setQuote] = useState<string>(QUOTES.welcome[0]);
+  const [logoError, setLogoError] = useState(false);
   
   // Undo State
   const [lastDeletedTask, setLastDeletedTask] = useState<Task | null>(null);
   const [showUndo, setShowUndo] = useState(false);
 
+  // PWA Install State
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallBtn, setShowInstallBtn] = useState(false);
+
   // --- Effects ---
   
+  // PWA Install Listener
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: any) => {
+      // Prevent Chrome 67 and earlier from automatically showing the prompt
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      setDeferredPrompt(e);
+      setShowInstallBtn(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
   // Persistence
   useEffect(() => {
     localStorage.setItem('5task_data', JSON.stringify(tasks));
@@ -62,6 +89,16 @@ const App: React.FC = () => {
     const random = options[Math.floor(Math.random() * options.length)];
     setQuote(random);
   }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setShowInstallBtn(false);
+    }
+    setDeferredPrompt(null);
+  };
 
   // --- Actions ---
 
@@ -122,7 +159,7 @@ const App: React.FC = () => {
         alert("Não é possível desfazer: A lista já está cheia!");
         return;
       }
-      setTasks(prev => [lastDeletedTask, ...prev]); // Add back to top or retain original pos logic if needed
+      setTasks(prev => [lastDeletedTask, ...prev]); 
       setShowUndo(false);
       setLastDeletedTask(null);
       setMood(Mood.HAPPY);
@@ -147,10 +184,32 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col items-center p-4 md:p-8 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
       
+      {/* PWA Install Button (Only shows if browser prompts) */}
+      {showInstallBtn && (
+        <button 
+          onClick={handleInstallClick}
+          className="mb-4 bg-gradient-to-r from-neon-blue to-neon-purple text-slate-900 font-bold px-4 py-2 rounded-full flex items-center gap-2 shadow-[0_0_15px_rgba(0,243,255,0.4)] animate-bounce"
+        >
+          <Download size={18} />
+          Instalar App
+        </button>
+      )}
+
       {/* Header */}
       <header className="w-full max-w-md text-center mb-2">
-        <div className="flex items-center justify-center gap-2 mb-1">
-          <BrainCircuit className="text-neon-pink w-8 h-8" />
+        <div className="flex items-center justify-center gap-3 mb-1">
+          {logoError ? (
+            <div className="w-10 h-10 rounded-lg bg-neon-purple flex items-center justify-center text-white font-bold text-xs border border-neon-blue shadow-[0_0_5px_rgba(0,243,255,0.5)]">
+              5T
+            </div>
+          ) : (
+            <img 
+              src="./assets/5task%20logo.png" 
+              onError={() => setLogoError(true)}
+              alt="5task Logo" 
+              className="w-10 h-10 object-contain drop-shadow-[0_0_5px_rgba(0,243,255,0.5)]" 
+            />
+          )}
           <h1 className="text-4xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-purple drop-shadow-[0_0_10px_rgba(0,243,255,0.5)]">
             5task
           </h1>

@@ -1,14 +1,12 @@
 import { Mood, QuoteType } from './types';
 
+// Usando caminhos locais relativos. 
+// Certifique-se de que a pasta 'assets' esteja na raiz do seu projeto final (junto com index.html)
 export const AVATAR_IMAGES: Record<Mood, string> = {
-  // Einstein mostrando a língua
   [Mood.HAPPY]: './assets/einstein-happy.png', 
-  // Einstein pensando (mão no queixo)
-  [Mood.THINKING]: './assets/einstein-thinking.png', 
-  // Einstein fazendo joinha
-  [Mood.EXCITED]: './assets/einstein-excited.png', 
-  // Einstein assustado/mãos no rosto
-  [Mood.SHOCKED]: './assets/einstein-shocked.png', 
+  [Mood.THINKING]: './assets/einstein-skeptical.png', 
+  [Mood.EXCITED]: './assets/einstein-ecstatic.png', 
+  [Mood.SHOCKED]: './assets/einstein-worried.png', 
 };
 
 export const QUOTES: Record<QuoteType, string[]> = {
