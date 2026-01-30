@@ -11,7 +11,7 @@
   "categories": ["productivity", "utilities"],
   "icons": [
     {
-      "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/Stalk%20logo.png",
+      "src": "/assets/Stalk logo.png",
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any maskable"
@@ -19,14 +19,14 @@
   ],
   "screenshots": [
     {
-      "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/Stalk%20logo.png",
+      "src": "/assets/Stalk logo.png",
       "sizes": "1024x1024",
       "type": "image/png",
       "form_factor": "wide",
       "label": "5task Desktop"
     },
     {
-      "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/Stalk%20logo.png",
+      "src": "/assets/Stalk logo.png",
       "sizes": "1024x1024",
       "type": "image/png",
       "form_factor": "narrow",
