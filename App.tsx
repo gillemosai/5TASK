@@ -1,128 +1,142 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, Trash2, Undo2, X, Download, Share2 } from 'lucide-react';
-import { Task, Mood, QuoteType } from './types';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Plus, Trash2, Undo2, X, Download, StickyNote, ArrowRight, RefreshCw, Database } from 'lucide-react';
+import { Task, Mood, QuoteType, SubTask } from './types';
 import { QUOTES } from './constants';
 import { EinsteinAvatar } from './components/EinsteinAvatar';
 import { TaskItem } from './components/TaskItem';
+import { KanbanBoard } from './components/KanbanBoard';
+
+// --- Database Engine (IndexedDB + Persistent Storage API) ---
+const DB_NAME = '5task_db';
+const STORE_NAME = 'tasks_store';
+
+const initDB = (): Promise<IDBDatabase> => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, 1);
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME);
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+};
+
+const saveTasksToDB = async (tasks: Task[]) => {
+  try {
+    const db = await initDB();
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    tx.objectStore(STORE_NAME).put(tasks, 'current_tasks');
+    return new Promise((resolve) => { tx.oncomplete = resolve; });
+  } catch (e) {
+    console.error("Falha crítica ao gravar no banco:", e);
+  }
+};
+
+const loadTasksFromDB = async (): Promise<Task[]> => {
+  try {
+    const db = await initDB();
+    return new Promise((resolve) => {
+      const request = db.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME).get('current_tasks');
+      request.onsuccess = () => resolve(request.result || []);
+      request.onerror = () => resolve([]);
+    });
+  } catch (e) {
+    return [];
+  }
+};
 
 const MAX_TASKS = 5;
+const LOGO_URL = 'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/Stalk%20logo.png';
+const SUCCESS_SOUND_URL = 'https://codeskulptor-demos.commondatastorage.googleapis.com/pang/pop.mp3';
+const APP_VERSION = "v47";
 
 const App: React.FC = () => {
   // --- State ---
-  const [tasks, setTasks] = useState<Task[]>(() => {
-    try {
-      const saved = localStorage.getItem('5task_data');
-      return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-      console.error("Erro ao carregar tarefas", e);
-      return [];
-    }
-  });
-  
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isPersistent, setIsPersistent] = useState(false);
   const [newTaskText, setNewTaskText] = useState('');
   const [mood, setMood] = useState<Mood>(Mood.THINKING);
   const [quote, setQuote] = useState<string>(QUOTES.welcome[0]);
-  const [logoError, setLogoError] = useState(false);
   
-  // Undo State
+  // Refs
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [activeKanbanTaskId, setActiveKanbanTaskId] = useState<string | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // D&D Refs
+  const dragItem = useRef<number | null>(null);
+  
   const [lastDeletedTask, setLastDeletedTask] = useState<Task | null>(null);
   const [showUndo, setShowUndo] = useState(false);
 
-  // PWA Install State
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [showInstallBtn, setShowInstallBtn] = useState(false);
-
-  // --- Effects ---
-  
-  // PWA Install Listener
+  // --- Initial Load & Persistence Request ---
   useEffect(() => {
-    const handleBeforeInstallPrompt = (e: any) => {
-      // Prevent Chrome 67 and earlier from automatically showing the prompt
-      e.preventDefault();
-      // Stash the event so it can be triggered later.
-      setDeferredPrompt(e);
-      setShowInstallBtn(true);
-    };
+    const setupApp = async () => {
+      const savedTasks = await loadTasksFromDB();
+      setTasks(savedTasks);
+      setIsLoading(false);
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      if (navigator.storage && navigator.storage.persist) {
+        const persistent = await navigator.storage.persist();
+        setIsPersistent(persistent);
+      }
     };
+    setupApp();
   }, []);
 
-  // Persistence
+  // --- Auto-Save ---
   useEffect(() => {
-    localStorage.setItem('5task_data', JSON.stringify(tasks));
-  }, [tasks]);
+    if (!isLoading) {
+      saveTasksToDB(tasks);
+    }
+  }, [tasks, isLoading]);
 
-  // Update Avatar based on changes
+  // Handle Action Links
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('action') === 'new') {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        setTimeout(() => inputRef.current?.focus(), 600);
+    }
+  }, []);
+
+  // Avatar Logic
+  useEffect(() => {
+    if (isLoading) return;
+    if (activeKanbanTaskId && !isSidebarOpen) {
+        setMood(Mood.THINKING);
+        return;
+    }
     if (tasks.length === 0) {
       setMood(Mood.THINKING);
-      setRandomQuote('welcome');
-      return;
-    }
-    
-    // Check if we just hit max
-    if (tasks.length >= MAX_TASKS) {
+      setQuote(QUOTES.welcome[Math.floor(Math.random() * QUOTES.welcome.length)]);
+    } else if (tasks.length >= MAX_TASKS) {
       setMood(Mood.SHOCKED);
-      setRandomQuote('full');
+      setQuote(QUOTES.full[Math.floor(Math.random() * QUOTES.full.length)]);
     }
-  }, [tasks.length]);
+  }, [tasks.length, activeKanbanTaskId, isSidebarOpen, isLoading]);
 
-  // Auto-hide undo toast after 4 seconds
-  useEffect(() => {
-    if (showUndo) {
-      const timer = setTimeout(() => {
-        setShowUndo(false);
-        setLastDeletedTask(null);
-      }, 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [showUndo]);
-
-  // --- Helpers ---
-
-  const setRandomQuote = useCallback((type: QuoteType) => {
-    const options = QUOTES[type];
-    const random = options[Math.floor(Math.random() * options.length)];
-    setQuote(random);
-  }, []);
-
-  const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      setShowInstallBtn(false);
-    }
-    setDeferredPrompt(null);
-  };
-
-  // --- Actions ---
-
+  // Actions
   const addTask = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newTaskText.trim()) return;
-
-    if (tasks.length >= MAX_TASKS) {
-      setMood(Mood.SHOCKED);
-      setRandomQuote('full');
-      return;
-    }
+    if (!newTaskText.trim() || tasks.length >= MAX_TASKS) return;
 
     const newTask: Task = {
       id: crypto.randomUUID(),
       text: newTaskText.trim(),
       completed: false,
       createdAt: Date.now(),
+      subTasks: []
     };
 
     setTasks(prev => [newTask, ...prev]);
     setNewTaskText('');
-    setMood(Mood.THINKING);
-    setRandomQuote('add');
+    setMood(Mood.HAPPY);
+    setQuote(QUOTES.add[Math.floor(Math.random() * QUOTES.add.length)]);
   };
 
   const toggleComplete = (id: string) => {
@@ -131,9 +145,8 @@ const App: React.FC = () => {
         const isNowComplete = !t.completed;
         if (isNowComplete) {
           setMood(Mood.HAPPY);
-          setRandomQuote('complete');
-        } else {
-          setMood(Mood.THINKING);
+          setQuote(QUOTES.complete[Math.floor(Math.random() * QUOTES.complete.length)]);
+          new Audio(SUCCESS_SOUND_URL).play().catch(() => {});
         }
         return { ...t, completed: isNowComplete };
       }
@@ -146,166 +159,139 @@ const App: React.FC = () => {
     if (taskToDelete) {
       setLastDeletedTask(taskToDelete);
       setShowUndo(true);
-      
       setTasks(prev => prev.filter(t => t.id !== id));
+      if (activeKanbanTaskId === id) setActiveKanbanTaskId(null);
       setMood(Mood.EXCITED);
-      setRandomQuote('delete');
     }
   };
 
-  const undoDelete = () => {
-    if (lastDeletedTask) {
-      if (tasks.length >= MAX_TASKS) {
-        alert("Não é possível desfazer: A lista já está cheia!");
-        return;
-      }
-      setTasks(prev => [lastDeletedTask, ...prev]); 
-      setShowUndo(false);
-      setLastDeletedTask(null);
-      setMood(Mood.HAPPY);
-      setQuote("Ufa! Recuperei essa informação do buraco negro.");
-    }
-  };
+  const activeTaskForKanban = tasks.find(t => t.id === activeKanbanTaskId);
 
-  const deleteAll = () => {
-    if (window.confirm('Einstein pergunta: Tem certeza que deseja apagar todo o conhecimento acumulado?')) {
-      setTasks([]);
-      setMood(Mood.SHOCKED);
-      setRandomQuote('delete');
-    }
-  };
-
-  const editTask = (id: string, newText: string) => {
-    setTasks(prev => prev.map(t => t.id === id ? { ...t, text: newText } : t));
-  };
-
-  const remainingSlots = MAX_TASKS - tasks.length;
+  if (isLoading) return null;
 
   return (
-    <div className="min-h-screen flex flex-col items-center p-4 md:p-8 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
-      
-      {/* PWA Install Button (Only shows if browser prompts) */}
-      {showInstallBtn && (
-        <button 
-          onClick={handleInstallClick}
-          className="mb-4 bg-gradient-to-r from-neon-blue to-neon-purple text-slate-900 font-bold px-4 py-2 rounded-full flex items-center gap-2 shadow-[0_0_15px_rgba(0,243,255,0.4)] animate-bounce"
-        >
-          <Download size={18} />
-          Instalar App
-        </button>
-      )}
-
-      {/* Header */}
-      <header className="w-full max-w-md text-center mb-2">
-        <div className="flex items-center justify-center gap-3 mb-1">
-          {logoError ? (
-            <div className="w-10 h-10 rounded-lg bg-neon-purple flex items-center justify-center text-white font-bold text-xs border border-neon-blue shadow-[0_0_5px_rgba(0,243,255,0.5)]">
-              5T
-            </div>
-          ) : (
-            <img 
-              src="./assets/5task%20logo.png" 
-              onError={() => setLogoError(true)}
-              alt="5task Logo" 
-              className="w-10 h-10 object-contain drop-shadow-[0_0_5px_rgba(0,243,255,0.5)]" 
-            />
-          )}
-          <h1 className="text-4xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-purple drop-shadow-[0_0_10px_rgba(0,243,255,0.5)]">
-            5task
-          </h1>
-        </div>
-        <p className="text-xs text-slate-500 font-mono">
-          Copyright © gillemosai | Todos os direitos reservados
-        </p>
-      </header>
-
-      {/* Main Content Area */}
-      <main className="w-full max-w-md flex flex-col flex-grow">
+    <div className="min-h-screen bg-slate-950 flex justify-center py-4 md:py-8 px-4 selection:bg-neon-purple/30">
+      <div className={`w-full transition-all duration-500 flex flex-col md:flex-row gap-6 ${isSidebarOpen ? 'max-w-[1400px]' : 'max-w-lg'}`}>
         
-        {/* Avatar Section */}
-        <EinsteinAvatar mood={mood} quote={quote} />
+        {/* Lado Esquerdo: Main UI */}
+        <main className={`flex flex-col w-full shrink-0 ${isSidebarOpen ? 'md:w-80 lg:w-96' : 'mx-auto'} ${activeKanbanTaskId && !isSidebarOpen ? 'hidden' : 'block'} pb-20`}>
+            <header className="flex items-center justify-between mb-6 bg-slate-900/60 p-4 rounded-3xl border border-slate-800 backdrop-blur-xl">
+                <div className="flex items-center gap-3">
+                    <img src={LOGO_URL} alt="5task" className="w-10 h-10 object-contain drop-shadow-[0_0_8px_rgba(0,243,255,0.4)]" />
+                    <h1 className="text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-purple">5task</h1>
+                </div>
+                <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className={`p-2 rounded-2xl border transition-all ${isSidebarOpen ? 'bg-neon-purple border-neon-blue' : 'bg-slate-800 border-slate-700'}`}>
+                    <StickyNote size={20} className={isSidebarOpen ? 'text-white' : 'text-slate-400'} />
+                </button>
+            </header>
 
-        {/* Task Counter */}
-        <div className="flex justify-between items-end mb-2 px-2">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Suas Missões</span>
-          <span className={`text-xs font-mono px-2 py-1 rounded border ${remainingSlots === 0 ? 'border-red-500 text-red-500 bg-red-500/10' : 'border-neon-blue text-neon-blue bg-neon-blue/10'}`}>
-            Slots: {remainingSlots} / {MAX_TASKS}
-          </span>
-        </div>
+            <EinsteinAvatar mood={mood} quote={quote} />
 
-        {/* Input Form */}
-        <form onSubmit={addTask} className="relative mb-6">
-          <input
-            type="text"
-            value={newTaskText}
-            onChange={(e) => setNewTaskText(e.target.value)}
-            disabled={remainingSlots === 0}
-            placeholder={remainingSlots === 0 ? "Memória cheia! Conclua algo." : "Nova tarefa..."}
-            className={`w-full bg-slate-900/80 text-white pl-4 pr-12 py-4 rounded-2xl border-2 outline-none transition-all shadow-lg
-              ${remainingSlots === 0 
-                ? 'border-slate-700 opacity-50 cursor-not-allowed placeholder-red-400' 
-                : 'border-slate-700 focus:border-neon-blue focus:shadow-[0_0_20px_rgba(0,243,255,0.2)] placeholder-slate-500'}`}
-          />
-          <button
-            type="submit"
-            disabled={remainingSlots === 0 || !newTaskText.trim()}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-neon-purple text-white rounded-xl hover:bg-neon-pink disabled:opacity-50 disabled:hover:bg-neon-purple transition-all duration-300"
-          >
-            <Plus size={20} />
-          </button>
-        </form>
-
-        {/* Task List */}
-        <div className="flex-grow space-y-4 pb-20">
-          {tasks.length === 0 ? (
-            <div className="text-center py-10 text-slate-600 border-2 border-dashed border-slate-800 rounded-xl">
-              <p>Nenhuma tarefa na memória.</p>
-              <p className="text-sm mt-2">Adicione algo para começar!</p>
+            <div className="flex justify-between items-center mb-2 px-2">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Fluxo de Eventos</span>
+                <span className={`text-xs font-mono px-3 py-1 rounded-full border ${tasks.length >= MAX_TASKS ? 'border-red-500/50 text-red-400' : 'border-neon-blue/30 text-neon-blue'}`}>
+                    {tasks.length} / {MAX_TASKS}
+                </span>
             </div>
-          ) : (
-            tasks.map(task => (
-              <TaskItem
-                key={task.id}
-                task={task}
-                onComplete={toggleComplete}
-                onDelete={deleteTask}
-                onEdit={editTask}
-              />
-            ))
-          )}
-        </div>
-      </main>
 
-      {/* Undo Notification Toast */}
-      {showUndo && (
-        <div className="fixed bottom-24 left-0 right-0 flex justify-center z-50 animate-[slideUp_0.3s_ease-out]">
-           <div className="bg-slate-800 border border-slate-600 text-white px-4 py-3 rounded-lg shadow-2xl flex items-center gap-4">
-             <span className="text-sm">Tarefa excluída.</span>
-             <button 
-               onClick={undoDelete}
-               className="flex items-center gap-1 text-neon-blue font-bold text-sm hover:underline"
-             >
-               <Undo2 size={16} /> Desfazer
-             </button>
-             <button onClick={() => setShowUndo(false)} className="text-slate-500 hover:text-white ml-2">
-               <X size={14} />
-             </button>
-           </div>
-        </div>
-      )}
+            <form onSubmit={addTask} className="relative mb-6">
+                <input
+                    ref={inputRef}
+                    type="text"
+                    value={newTaskText}
+                    onChange={(e) => setNewTaskText(e.target.value)}
+                    disabled={tasks.length >= MAX_TASKS}
+                    placeholder={tasks.length >= MAX_TASKS ? "Limite de Massa Atendido" : "Próxima observação..."}
+                    className="w-full bg-slate-900/90 text-white pl-5 pr-14 py-4 rounded-2xl border-2 border-slate-800 focus:border-neon-blue/50 focus:ring-4 focus:ring-neon-blue/5 outline-none transition-all placeholder:text-slate-600 shadow-2xl"
+                />
+                <button type="submit" disabled={tasks.length >= MAX_TASKS || !newTaskText.trim()} className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 bg-neon-purple text-white rounded-xl hover:scale-105 active:scale-95 disabled:opacity-30 transition-all">
+                    <Plus size={20} />
+                </button>
+            </form>
 
-      {/* Floating Action Button for Delete All (if tasks exist) */}
-      {tasks.length > 0 && (
-        <div className="fixed bottom-6 left-0 right-0 flex justify-center z-50 pointer-events-none">
-          <button
-            onClick={deleteAll}
-            className="pointer-events-auto bg-slate-900/90 backdrop-blur border border-red-900/50 text-red-400 px-6 py-3 rounded-full shadow-2xl flex items-center gap-2 hover:bg-red-950/80 hover:text-red-200 transition-all active:scale-95"
-          >
-            <Trash2 size={16} />
-            <span className="text-sm font-bold">Limpar Memória</span>
-          </button>
-        </div>
-      )}
+            <div className="space-y-3 mb-8">
+                {tasks.map((task, index) => (
+                    <div key={task.id} 
+                         className="transition-all"
+                         onClick={() => isSidebarOpen && setActiveKanbanTaskId(task.id)}>
+                        <TaskItem
+                            index={index}
+                            task={task}
+                            isActive={activeKanbanTaskId === task.id}
+                            onComplete={toggleComplete}
+                            onDelete={deleteTask}
+                            onEdit={(id, text) => setTasks(prev => prev.map(t => t.id === id ? {...t, text} : t))}
+                            onOpenKanban={(id) => setActiveKanbanTaskId(id)}
+                            onDragStart={(e, pos) => { dragItem.current = pos; }}
+                            onDragEnter={(e, pos) => {
+                                if (dragItem.current !== null && dragItem.current !== pos) {
+                                    const _tasks = [...tasks];
+                                    const dragged = _tasks[dragItem.current];
+                                    _tasks.splice(dragItem.current, 1);
+                                    _tasks.splice(pos, 0, dragged);
+                                    dragItem.current = pos;
+                                    setTasks(_tasks);
+                                }
+                            }}
+                            onDragEnd={() => { dragItem.current = null; }}
+                        />
+                    </div>
+                ))}
+                {tasks.length === 0 && (
+                    <div className="py-12 text-center text-slate-700 border-2 border-dashed border-slate-800/50 rounded-3xl">
+                        <p className="text-sm font-mono">Einstein está em repouso.</p>
+                    </div>
+                )}
+            </div>
+
+            <footer className="mt-auto py-6 text-center space-y-2">
+                <p className="text-[9px] text-slate-600 font-mono tracking-widest uppercase flex items-center justify-center gap-2">
+                    Engine {APP_VERSION} <RefreshCw size={8} className="animate-spin-slow" /> Persistence: Active
+                </p>
+                <div className={`text-[8px] font-bold inline-flex items-center gap-1.5 px-3 py-1 rounded-full border transition-all
+                  ${isPersistent ? 'bg-green-500/10 border-green-500/20 text-green-500' : 'bg-orange-500/10 border-orange-500/20 text-orange-500'}`}>
+                  <Database size={8} /> {isPersistent ? 'MEMÓRIA PERMANENTE' : 'MEMÓRIA TEMPORÁRIA'}
+                </div>
+            </footer>
+        </main>
+
+        {/* Lado Direito: Kanban Board */}
+        {(activeKanbanTaskId || isSidebarOpen) && (
+            <aside className={`transition-all duration-500 flex flex-col bg-slate-900/40 rounded-[2.5rem] border border-slate-800 p-6 backdrop-blur-md
+                ${isSidebarOpen ? 'flex-1 opacity-100' : activeKanbanTaskId ? 'fixed inset-0 z-50 rounded-none p-4' : 'w-0 opacity-0 overflow-hidden'}`}>
+                {activeTaskForKanban ? (
+                    <KanbanBoard 
+                        task={activeTaskForKanban} 
+                        onClose={() => setActiveKanbanTaskId(null)}
+                        onUpdateSubtasks={(subs) => setTasks(prev => prev.map(t => t.id === activeKanbanTaskId ? {...t, subTasks: subs} : t))}
+                        isSidebar={isSidebarOpen}
+                    />
+                ) : (
+                    <div className="h-full flex flex-col items-center justify-center text-slate-600">
+                        <StickyNote size={48} className="mb-4 opacity-10" />
+                        <p className="text-xs uppercase tracking-widest font-mono">Selecione uma missão à esquerda</p>
+                    </div>
+                )}
+            </aside>
+        )}
+
+        {/* Toast Desfazer */}
+        {showUndo && (
+            <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] bg-slate-800 text-white px-6 py-4 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-6 animate-[slideUp_0.3s_ease]">
+                <span className="text-sm">Matéria recuperada.</span>
+                <button onClick={() => {
+                   if (lastDeletedTask && tasks.length < MAX_TASKS) {
+                      setTasks(prev => [lastDeletedTask, ...prev]);
+                      setShowUndo(false);
+                      setLastDeletedTask(null);
+                   }
+                }} className="text-neon-blue font-black text-xs flex items-center gap-2 hover:underline">
+                    <Undo2 size={14} /> DESFAZER
+                </button>
+                <button onClick={() => setShowUndo(false)}><X size={14} className="text-slate-500" /></button>
+            </div>
+        )}
+      </div>
     </div>
   );
 };

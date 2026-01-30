@@ -1,0 +1,98 @@
+{
+  "name": "5task - Foco Simples",
+  "short_name": "5task",
+  "description": "Um gerenciador de tarefas focado com limite de 5 itens e a genialidade de Einstein.",
+  "id": "5task-app-v1",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui", "tabbed"],
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "orientation": "portrait",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["productivity", "education", "utilities"],
+  "handle_links": "preferred",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/Stalk%20logo.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/Stalk%20logo.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Nova Tarefa",
+      "short_name": "Adicionar",
+      "description": "Adicionar uma nova tarefa rapidamente",
+      "url": "/?action=new",
+      "icons": [{ 
+        "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/Stalk%20logo.png", 
+        "sizes": "1024x1024",
+        "type": "image/png",
+        "purpose": "any" 
+      }]
+    }
+  ],
+  "share_target": {
+    "action": "/?source=share",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "file_handlers": [
+    {
+      "action": "/?source=file",
+      "accept": {
+        "application/json": [".json", ".5task"]
+      },
+      "icons": [
+        {
+          "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/Stalk%20logo.png",
+          "sizes": "1024x1024",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+fivetask",
+      "url": "/?action=%s"
+    }
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "screenshots": [
+    {
+      "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/Stalk%20logo.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "5task Desktop"
+    },
+    {
+      "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/Stalk%20logo.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "5task Mobile"
+    }
+  ]
+}

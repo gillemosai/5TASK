@@ -1,12 +1,11 @@
 import { Mood, QuoteType } from './types';
 
-// Usando caminhos locais relativos. 
-// Certifique-se de que a pasta 'assets' esteja na raiz do seu projeto final (junto com index.html)
+// URLs diretas do GitHub para garantir carregamento em Preview e PWA
 export const AVATAR_IMAGES: Record<Mood, string> = {
-  [Mood.HAPPY]: './assets/einstein-happy.png', 
-  [Mood.THINKING]: './assets/einstein-skeptical.png', 
-  [Mood.EXCITED]: './assets/einstein-ecstatic.png', 
-  [Mood.SHOCKED]: './assets/einstein-worried.png', 
+  [Mood.HAPPY]: 'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/einstein-happy.png',
+  [Mood.THINKING]: 'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/einstein-skeptical.png',
+  [Mood.EXCITED]: 'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/einstein-ecstatic.png',
+  [Mood.SHOCKED]: 'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/einstein-worried.png',
 };
 
 export const QUOTES: Record<QuoteType, string[]> = {
@@ -31,13 +30,13 @@ export const QUOTES: Record<QuoteType, string[]> = {
     "Limpando o espaço-tempo para novas ideias."
   ],
   full: [
-    "Eita! Atingimos a massa crítica! Termine algo antes de adicionar mais.",
-    "Meu cérebro está cheio! 5 tarefas é o limite do universo observável aqui.",
-    "Stop! Sobrecarga no sistema. Foco nas 5 prioridades."
+    "Tudo deve ser feito da forma mais simples possível. 5 tarefas é a equação elegante para hoje.",
+    "Atingimos a massa crítica de produtividade! Focar em poucas variáveis garante o sucesso da teoria.",
+    "Até a velocidade da luz tem limite! Vamos concluir estas 5 para manter a eficiência máxima."
   ],
   idle: [
     "O tempo é uma ilusão... mas o prazo dessa tarefa não é!",
     "Se você não pode explicar o que está fazendo de forma simples, você não entendeu bem.",
-    "Duas coisas são infinitas: o universo e a lista de tarefas... não, espera, a lista é só 5!"
+    "Duas coisas são infinitas: o universo e a criatividade humana. Vamos usá-la aqui!"
   ]
 };

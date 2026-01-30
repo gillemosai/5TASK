@@ -1,26 +1,24 @@
-const CACHE_NAME = '5task-v5'; 
+const CACHE_NAME = '5task-v19'; 
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json',
+  './',
+  './index.html',
+  './manifest.json',
   'https://cdn.tailwindcss.com',
-  'https://cdn-icons-png.flaticon.com/512/906/906334.png',
-  './assets/5task%20logo.png',
-  './assets/einstein-happy.png',
-  './assets/einstein-skeptical.png',
-  './assets/einstein-ecstatic.png',
-  './assets/einstein-worried.png'
+  'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/Stalk%20logo.png',
+  'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/einstein-happy.png',
+  'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/einstein-skeptical.png',
+  'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/einstein-ecstatic.png',
+  'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/einstein-worried.png',
+  'https://codeskulptor-demos.commondatastorage.googleapis.com/pang/pop.mp3'
 ];
 
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      // Usamos .addAll mas ignoramos erros se algum arquivo local não existir no preview
       return Promise.all(
         ASSETS_TO_CACHE.map(url => {
-            return cache.add(url).catch(err => {
-                console.log('Falha ao cachear (esperado em preview):', url);
-            });
+            return cache.add(url).catch(err => console.log('Falha ao cachear:', url, err));
         })
       );
     })
@@ -28,13 +26,12 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
+  event.waitUntil(clients.claim());
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
-          }
+          if (cache !== CACHE_NAME) return caches.delete(cache);
         })
       );
     })
@@ -44,25 +41,17 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
+      if (cachedResponse) return cachedResponse;
       return fetch(event.request).then((response) => {
-        // Return valid responses
         if (!response || response.status !== 200 || response.type !== 'basic' && response.type !== 'cors') {
           return response;
         }
-
         const responseToCache = response.clone();
         caches.open(CACHE_NAME).then((cache) => {
           cache.put(event.request, responseToCache);
         });
-
         return response;
       });
-    }).catch(() => {
-        // Fallback for offline if needed
-        return new Response("Offline");
-    })
+    }).catch(() => new Response("Offline"))
   );
 });
