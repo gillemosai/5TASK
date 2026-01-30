@@ -1,11 +1,11 @@
 import { Mood, QuoteType } from './types';
 
-// URLs diretas do GitHub para garantir carregamento em Preview e PWA
+// V48: Agora apontando para a pasta local /assets/ para funcionamento offline e local
 export const AVATAR_IMAGES: Record<Mood, string> = {
-  [Mood.HAPPY]: 'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/einstein-happy.png',
-  [Mood.THINKING]: 'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/einstein-skeptical.png',
-  [Mood.EXCITED]: 'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/einstein-ecstatic.png',
-  [Mood.SHOCKED]: 'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/einstein-worried.png',
+  [Mood.HAPPY]: '/assets/einstein-happy.png',
+  [Mood.THINKING]: '/assets/einstein-skeptical.png',
+  [Mood.EXCITED]: '/assets/einstein-ecstatic.png',
+  [Mood.SHOCKED]: '/assets/einstein-worried.png',
 };
 
 export const QUOTES: Record<QuoteType, string[]> = {

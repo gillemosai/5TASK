@@ -1,14 +1,14 @@
-const CACHE_NAME = '5task-v19'; 
-const ASSETS_TO_CACHE = [
-  './',
-  './index.html',
-  './manifest.json',
+const CACHE_NAME = '5task-engine-v48';
+const APP_SHELL = [
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/assets/Stalk logo.png',
+  '/assets/einstein-happy.png',
+  '/assets/einstein-skeptical.png',
+  '/assets/einstein-ecstatic.png',
+  '/assets/einstein-worried.png',
   'https://cdn.tailwindcss.com',
-  'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/Stalk%20logo.png',
-  'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/einstein-happy.png',
-  'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/einstein-skeptical.png',
-  'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/einstein-ecstatic.png',
-  'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/einstein-worried.png',
   'https://codeskulptor-demos.commondatastorage.googleapis.com/pang/pop.mp3'
 ];
 
@@ -16,11 +16,7 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return Promise.all(
-        ASSETS_TO_CACHE.map(url => {
-            return cache.add(url).catch(err => console.log('Falha ao cachear:', url, err));
-        })
-      );
+      return cache.addAll(APP_SHELL);
     })
   );
 });
@@ -28,30 +24,30 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(clients.claim());
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) return caches.delete(cache);
-        })
-      );
+    caches.keys().then((keys) => {
+      return Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)));
     })
   );
 });
 
 self.addEventListener('fetch', (event) => {
+  const { request } = event;
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
+    caches.match(request).then((cachedResponse) => {
       if (cachedResponse) return cachedResponse;
-      return fetch(event.request).then((response) => {
-        if (!response || response.status !== 200 || response.type !== 'basic' && response.type !== 'cors') {
-          return response;
-        }
-        const responseToCache = response.clone();
+      return fetch(request).then((networkResponse) => {
+        if (!networkResponse || networkResponse.status !== 200) return networkResponse;
+        const responseToCache = networkResponse.clone();
         caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
+          const url = new URL(request.url);
+          if (url.origin === location.origin || url.host.includes('tailwindcss')) {
+             cache.put(request, responseToCache);
+          }
         });
-        return response;
+        return networkResponse;
+      }).catch(() => {
+        if (request.mode === 'navigate') return caches.match('/index.html');
       });
-    }).catch(() => new Response("Offline"))
+    })
   );
 });

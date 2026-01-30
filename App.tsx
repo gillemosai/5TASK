@@ -49,9 +49,10 @@ const loadTasksFromDB = async (): Promise<Task[]> => {
 };
 
 const MAX_TASKS = 5;
-const LOGO_URL = 'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/Stalk%20logo.png';
+// V48: Logo agora local
+const LOGO_URL = '/assets/Stalk logo.png';
 const SUCCESS_SOUND_URL = 'https://codeskulptor-demos.commondatastorage.googleapis.com/pang/pop.mp3';
-const APP_VERSION = "v47";
+const APP_VERSION = "v48";
 
 const App: React.FC = () => {
   // --- State ---
