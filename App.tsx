@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Plus, Trash2, Undo2, X, Download, StickyNote, ArrowRight, RefreshCw, Database } from 'lucide-react';
+import { Plus, Trash2, Undo2, X, Download, StickyNote, ArrowRight, RefreshCw, Database, AlertCircle } from 'lucide-react';
 import { Task, Mood, QuoteType, SubTask } from './types';
 import { QUOTES, AVATAR_IMAGES } from './constants';
 import { EinsteinAvatar } from './components/EinsteinAvatar';
@@ -53,14 +53,15 @@ const loadTasksFromDB = async (): Promise<Task[]> => {
 };
 
 const MAX_TASKS = 5;
-const LOGO_URL = 'https://raw.githubusercontent.com/gillemosai/5task/main/assets/5task-logo.png?v=62';
+const LOGO_URL = './assets/5task-logo.png';
 const SUCCESS_SOUND_URL = 'https://codeskulptor-demos.commondatastorage.googleapis.com/pang/pop.mp3';
-const APP_VERSION = "v62";
+const APP_VERSION = "v63";
 
 const App: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isPersistent, setIsPersistent] = useState(false);
+  const [logoError, setLogoError] = useState(false);
   const [newTaskText, setNewTaskText] = useState('');
   const [mood, setMood] = useState<Mood>(Mood.THINKING);
   const [quote, setQuote] = useState<string>(QUOTES.welcome[0]);
@@ -72,7 +73,6 @@ const App: React.FC = () => {
   const [lastDeletedTask, setLastDeletedTask] = useState<Task | null>(null);
   const [showUndo, setShowUndo] = useState(false);
 
-  // Carregamento inicial
   useEffect(() => {
     const setupApp = async () => {
       const savedTasks = await loadTasksFromDB();
@@ -84,18 +84,15 @@ const App: React.FC = () => {
       }
       
       setIsLoading(false);
-      // Notifica o index.html que o app está pronto
       window.dispatchEvent(new Event('app-ready'));
     };
     setupApp();
   }, []);
 
-  // Auto-Save
   useEffect(() => {
     if (!isLoading) saveTasksToDB(tasks);
   }, [tasks, isLoading]);
 
-  // Gestão de humor
   useEffect(() => {
     if (isLoading) return;
     if (tasks.length === 0) {
@@ -169,7 +166,18 @@ const App: React.FC = () => {
         <main className={`flex flex-col w-full shrink-0 ${isSidebarOpen ? 'md:w-80 lg:w-96' : 'mx-auto'} ${activeKanbanTaskId && !isSidebarOpen ? 'hidden' : 'block'} pb-20`}>
             <header className="flex items-center justify-between mb-6 bg-slate-900/60 p-3 rounded-2xl border border-slate-800 backdrop-blur-xl">
                 <div className="flex items-center gap-3">
-                    <img src={LOGO_URL} alt="5task" className="w-9 h-9 object-contain drop-shadow-[0_0_8px_rgba(0,243,255,0.4)]" />
+                    {!logoError ? (
+                      <img 
+                        src={LOGO_URL} 
+                        alt="5task" 
+                        onError={() => setLogoError(true)}
+                        className="w-9 h-9 object-contain drop-shadow-[0_0_8px_rgba(0,243,255,0.4)]" 
+                      />
+                    ) : (
+                      <div className="w-9 h-9 flex items-center justify-center bg-neon-blue/20 rounded-lg text-neon-blue">
+                        <Database size={20} />
+                      </div>
+                    )}
                     <h1 className="text-xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-purple">5task</h1>
                 </div>
                 <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className={`p-2 rounded-xl border transition-all ${isSidebarOpen ? 'bg-neon-purple border-neon-blue' : 'bg-slate-800 border-slate-700'}`}>
@@ -237,9 +245,13 @@ const App: React.FC = () => {
                 <p className="text-[9px] text-slate-600 font-mono tracking-widest uppercase flex items-center justify-center gap-2">
                     Engine {APP_VERSION} <RefreshCw size={8} className="animate-spin-slow" />
                 </p>
-                <div className={`text-[8px] font-bold inline-flex items-center gap-1.5 px-3 py-1 rounded-full border transition-all
-                  ${isPersistent ? 'bg-green-500/10 border-green-500/20 text-green-500' : 'bg-orange-500/10 border-orange-500/20 text-orange-500'}`}>
-                  <Database size={8} /> {isPersistent ? 'MEMÓRIA PERMANENTE' : 'MEMÓRIA TEMPORÁRIA'}
+                <div 
+                  className={`text-[8px] font-bold inline-flex items-center gap-1.5 px-3 py-1 rounded-full border transition-all cursor-help
+                  ${isPersistent ? 'bg-green-500/10 border-green-500/20 text-green-500' : 'bg-orange-500/10 border-orange-500/20 text-orange-500'}`}
+                  title={isPersistent ? "Dados salvos permanentemente" : "O navegador pode limpar os dados. Instale o app para habilitar memória permanente."}
+                >
+                  {isPersistent ? <Database size={8} /> : <AlertCircle size={8} />} 
+                  {isPersistent ? 'MEMÓRIA PERMANENTE' : 'MEMÓRIA TEMPORÁRIA'}
                 </div>
             </footer>
         </main>

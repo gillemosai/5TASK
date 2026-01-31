@@ -8,13 +8,12 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>5task</title>
     
-    <!-- Prefetch assets to speed up initial load -->
-    <link rel="preconnect" href="https://raw.githubusercontent.com">
-    <link rel="preload" as="image" href="https://raw.githubusercontent.com/gillemosai/5task/main/assets/5task-logo.png?v=62">
+    <!-- Preloads para performance e garantir carregamento local -->
+    <link rel="preload" as="image" href="./assets/5task-logo.png">
     
-    <link rel="manifest" href="./manifest.json?v=62" />
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/gillemosai/5task/main/assets/5task-logo.png?v=62" />
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/gillemosai/5task/main/assets/5task-logo.png?v=62" />
+    <link rel="manifest" href="./manifest.json?v=63" />
+    <link rel="apple-touch-icon" href="./assets/5task-logo.png" />
+    <link rel="icon" type="image/png" href="./assets/5task-logo.png" />
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -97,31 +96,29 @@
         <div class="relative w-24 h-24 mb-6">
           <div class="absolute inset-0 border-4 border-neon-blue/20 rounded-full animate-spin-slow"></div>
           <div class="absolute inset-0 border-t-4 border-neon-purple rounded-full animate-spin"></div>
-          <img src="https://raw.githubusercontent.com/gillemosai/5task/main/assets/5task-logo.png?v=62" 
+          <img src="./assets/5task-logo.png" 
                class="absolute inset-4 w-16 h-16 object-contain animate-pulse-fast" alt="Logo">
         </div>
         <h1 class="text-2xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-purple">
           5TASK
         </h1>
-        <p class="mt-4 text-[9px] font-mono text-slate-600 uppercase tracking-[0.3em]">Quantum Engine v62 Online</p>
+        <p class="mt-4 text-[9px] font-mono text-slate-600 uppercase tracking-[0.3em]">Quantum Engine v63 Stable</p>
       </div>
     </div>
     
     <script type="module" src="./index.tsx"></script>
 
     <script>
-      // Sincronização com o React para esconder o Splash
       window.addEventListener('app-ready', () => {
         const splash = document.getElementById('splash');
         if (splash) splash.classList.add('splash-hidden');
       });
 
-      // Registro do Service Worker ultra-simplificado para evitar erros de origem
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('SW v62 Active'))
-            .catch(err => console.warn('SW Error ignored for dev mode:', err.message));
+            .then(reg => console.log('SW v63 Active'))
+            .catch(err => console.warn('SW Error:', err.message));
         });
       }
     </script>

@@ -17,7 +17,6 @@ export const EinsteinAvatar: React.FC<EinsteinAvatarProps> = ({ mood, quote }) =
     return () => clearTimeout(timer);
   }, [quote]);
 
-  // Sempre tenta carregar a imagem quando o humor muda
   useEffect(() => {
     setImageError(false);
   }, [mood]);
@@ -34,7 +33,6 @@ export const EinsteinAvatar: React.FC<EinsteinAvatarProps> = ({ mood, quote }) =
 
   return (
     <div className="flex flex-col items-center justify-center p-4 mb-6 relative">
-      {/* Speech Bubble */}
       <div 
         className={`bg-white text-slate-900 rounded-2xl p-4 mb-4 shadow-[0_0_15px_rgba(0,243,255,0.5)] 
         max-w-xs text-center border-2 border-neon-blue relative transform transition-all duration-300
@@ -46,7 +44,6 @@ export const EinsteinAvatar: React.FC<EinsteinAvatarProps> = ({ mood, quote }) =
         <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white border-r-2 border-b-2 border-neon-blue rotate-45"></div>
       </div>
 
-      {/* Avatar Image Container */}
       <div className="relative w-32 h-32 md:w-40 md:h-40">
         <div className="absolute inset-0 bg-neon-pink rounded-full blur-lg opacity-40 animate-pulse"></div>
         
@@ -60,7 +57,7 @@ export const EinsteinAvatar: React.FC<EinsteinAvatarProps> = ({ mood, quote }) =
               className="w-full h-full object-cover transition-opacity duration-300"
             />
           ) : (
-             <span className="text-6xl animate-bounce-slow filter drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
+             <span className="text-6xl animate-pulse filter drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
                {getEmojiForMood(mood)}
              </span>
           )}
