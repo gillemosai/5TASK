@@ -1,7 +1,7 @@
 # 🧠 5task - Quantum Productivity Engine
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/Stalk%20logo.png" width="120" alt="5task Logo">
+  <img src="https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png" width="160" alt="5task Logo">
 </p>
 
 <p align="center">
@@ -9,74 +9,76 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-48.0-blueviolet?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/Version-53.0-blueviolet?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/Focus-Max-00f3ff?style=for-the-badge" alt="Focus">
   <img src="https://img.shields.io/badge/PWA-Ready-green?style=for-the-badge" alt="PWA Ready">
+  <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="License">
 </p>
 
 ---
 
 ## 🚀 Sobre o Projeto
 
-O **5task** não é apenas mais um gerenciador de tarefas. É um motor de foco projetado para combater a paralisia por análise e a procrastinação moderna. Baseado no princípio de que a produtividade real vem da priorização implacável, o app limita você a apenas **5 tarefas simultâneas**.
+O **5task** é um gerenciador de tarefas minimalista e gamificado, desenhado sob o princípio da **Priorização Radical**. Em um mundo de distrações infinitas, o 5task impõe um limite físico de apenas **5 tarefas simultâneas**. Se você não consegue focar em 5 coisas, não conseguirá focar em nada.
 
-Se você não consegue focar em 5 coisas, não conseguirá focar em 100. O 5task força você a escolher o que realmente importa.
+O app utiliza a figura de **Albert Einstein** como seu mentor quântico, reagindo ao seu fluxo de trabalho e oferecendo insights motivacionais baseados em seu progresso.
 
-## ✨ Funcionalidades Exclusivas
+## ✨ Funcionalidades Principais
 
-### 👨‍🔬 Einstein: Seu Mentor Quântico
-O app conta com uma IA visual (Avatar de Einstein) que reage ao seu progresso:
-- **Pensativo:** Quando a lista está vazia.
-- **Feliz:** Quando você completa uma missão.
-- **Animado:** Quando você limpa o ambiente.
-- **Preocupado:** Quando você atinge o limite crítico de 5 tarefas.
+- **🛡️ Limite Quântico:** Sistema bloqueia a criação de mais de 5 tarefas para forçar o foco no que é essencial.
+- **👨‍🔬 Mentoria de Einstein:** Avatar dinâmico que muda de expressão (Feliz, Pensativo, Animado, Preocupado) conforme o estado da sua lista.
+- **📋 Quadro Kanban Integrado:** Cada tarefa principal pode ser expandida em um micro-gerenciamento com colunas *A Fazer*, *Andamento* e *Concluído*.
+- **💾 Persistência Offline (Offline First):** Utiliza **IndexedDB** para salvar dados localmente no navegador, garantindo que você nunca perca suas notas, mesmo sem internet.
+- **📱 PWA (Progressive Web App):** Instalável no Android e iOS como um aplicativo nativo, com carregamento instantâneo via Service Workers.
+- **🔄 Drag & Drop:** Reorganize suas prioridades facilmente arrastando os cards das tarefas.
+- **⚡ Interface Neon-Noir:** Design escuro e moderno com toques neon para reduzir a fadiga visual e aumentar a imersão.
 
-### 📋 Kanban Board (Sub-missões)
-Cada uma das 5 tarefas principais pode ser expandida em um quadro Kanban completo para gerenciar subtarefas em estágios de **A Fazer**, **Andamento** e **Concluído**.
+## 🛠️ Tecnologias Utilizadas
 
-### 💾 Memória Persistente (Offline First)
-Utilizando **IndexedDB** e **Service Workers**, seus dados são salvos localmente no navegador e o app funciona 100% offline, garantindo que suas ideias nunca se percam no espaço-tempo.
-
-### 📱 PWA & Mobile Ready
-Interface ultra-responsiva desenhada para ser instalada como um App nativo em dispositivos Android e iOS (PWA).
-
-## 🛠️ Tecnologias
-
-- **Frontend:** [React.js](https://reactjs.org/) (Hooks & Context)
-- **Estilização:** [Tailwind CSS](https://tailwindcss.com/) (Animações Customizadas)
-- **Ícones:** [Lucide React](https://lucide.dev/)
-- **Banco de Dados:** [IndexedDB](https://developer.mozilla.org/pt-BR/docs/Web/API/IndexedDB_API) via API nativa.
-- **PWA:** Service Workers & Web Manifest.
+- **[React](https://react.dev/):** Biblioteca para interfaces de usuário modernas e reativas.
+- **[Tailwind CSS](https://tailwindcss.com/):** Framework CSS utilitário para design responsivo e animações fluidas.
+- **[Lucide React](https://lucide.dev/):** Conjunto de ícones leves e elegantes.
+- **[IndexedDB](https://developer.mozilla.org/pt-BR/docs/Web/API/IndexedDB_API):** Banco de dados local robusto para armazenamento permanente.
+- **[Service Workers](https://developer.mozilla.org/pt-BR/docs/Web/API/Service_Worker_API):** Tecnologia para cache inteligente e funcionamento offline.
 
 ## ⚙️ Instalação Local
 
-Para rodar o 5task na sua máquina Windows/Linux/Mac:
+1.  **Clone o repositório:**
+    ```bash
+    git clone https://github.com/gillemosai/5task.git
+    cd 5task
+    ```
 
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/seu-usuario/5task.git
-   ```
+2.  **Instale as dependências:**
+    ```bash
+    npm install
+    ```
 
-2. **Importante (Assets):**
-   Para que as imagens do Einstein e o Logo carreguem localmente, você deve criar uma pasta chamada `assets` na raiz do projeto e adicionar os seguintes arquivos:
-   - `Stalk logo.png`
-   - `einstein-happy.png`
-   - `einstein-skeptical.png`
-   - `einstein-ecstatic.png`
-   - `einstein-worried.png`
+3.  **Inicie o ambiente de desenvolvimento:**
+    ```bash
+    npm run dev
+    ```
 
-3. Abra o `index.html` em um servidor local (Live Server no VS Code ou `npm run dev` se estiver usando Vite).
+4.  **Verifique os Assets:**
+    Certifique-se de que a pasta `assets/` contenha os arquivos:
+    - `5task-logo.png`
+    - `einstein-happy.png`
+    - `einstein-skeptical.png`
+    - `einstein-ecstatic.png`
+    - `einstein-worried.png`
 
 ## 🗺️ Roadmap de Evolução
 
-- [x] Sistema de Kanban para subtarefas.
-- [x] Persistência de dados com IndexedDB.
-- [x] Modo PWA Instalável.
-- [ ] Sincronização em nuvem via Firebase (Opcional).
-- [ ] Notificações Push para tarefas pendentes.
+- [x] Limite de 5 tarefas e Gamificação inicial.
+- [x] Persistência local com IndexedDB.
+- [x] Suporte completo a PWA.
+- [x] Micro-Kanban por tarefa.
+- [ ] ☁️ Sincronização opcional com Cloud (Firebase).
+- [ ] 🔔 Notificações Push para lembretes de tarefas paradas.
+- [ ] 📊 Dashboard de Produtividade Quântica.
 
 ---
 
 <p align="center">
-Desenvolvido com 💜 e foco por [Seu Nome/Organização]
+  Desenvolvido com 💜 por <strong>Gil Lemos</strong>
 </p>

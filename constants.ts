@@ -1,11 +1,13 @@
 import { Mood, QuoteType } from './types';
 
-// V48: Agora apontando para a pasta local /assets/ para funcionamento offline e local
+const GITHUB_ASSETS_BASE = 'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/';
+
+// V53: Caminhos absolutos do GitHub para garantir visualização em qualquer ambiente
 export const AVATAR_IMAGES: Record<Mood, string> = {
-  [Mood.HAPPY]: '/assets/einstein-happy.png',
-  [Mood.THINKING]: '/assets/einstein-skeptical.png',
-  [Mood.EXCITED]: '/assets/einstein-ecstatic.png',
-  [Mood.SHOCKED]: '/assets/einstein-worried.png',
+  [Mood.HAPPY]: `${GITHUB_ASSETS_BASE}einstein-happy.png`,
+  [Mood.THINKING]: `${GITHUB_ASSETS_BASE}einstein-skeptical.png`,
+  [Mood.EXCITED]: `${GITHUB_ASSETS_BASE}einstein-ecstatic.png`,
+  [Mood.SHOCKED]: `${GITHUB_ASSETS_BASE}einstein-worried.png`,
 };
 
 export const QUOTES: Record<QuoteType, string[]> = {

@@ -52,9 +52,9 @@ export const TaskItem: React.FC<TaskItemProps> = ({
         ${task.completed 
           ? 'bg-slate-900/40 border-slate-800 opacity-60' 
           : isActive 
-            ? 'bg-slate-800 border-neon-blue shadow-[0_0_20px_rgba(0,243,255,0.15)] z-10 scale-[1.02]' 
+            ? 'bg-slate-800 border-neon-blue shadow-[0_0_20px_rgba(0,243,255,0.15)] z-10 scale-[1.02] animate-bounce-active' 
             : 'bg-slate-900 border-slate-800 hover:border-slate-700 shadow-xl'
-        } ${isActive ? 'animate-bounce-active' : ''}`}
+        }`}
     >
       <div className="flex items-center p-4 gap-3">
         {/* Drag Handle */}
