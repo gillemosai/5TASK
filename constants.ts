@@ -2,7 +2,6 @@ import { Mood, QuoteType } from './types';
 
 const GITHUB_ASSETS_BASE = 'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/';
 
-// V53: Caminhos absolutos do GitHub para garantir visualização em qualquer ambiente
 export const AVATAR_IMAGES: Record<Mood, string> = {
   [Mood.HAPPY]: `${GITHUB_ASSETS_BASE}einstein-happy.png`,
   [Mood.THINKING]: `${GITHUB_ASSETS_BASE}einstein-skeptical.png`,

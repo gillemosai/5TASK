@@ -17,7 +17,7 @@ export const EinsteinAvatar: React.FC<EinsteinAvatarProps> = ({ mood, quote }) =
     return () => clearTimeout(timer);
   }, [quote]);
 
-  // Reset error state if mood changes (trying to load new image)
+  // Sempre tenta carregar a imagem quando o humor muda
   useEffect(() => {
     setImageError(false);
   }, [mood]);
@@ -26,7 +26,7 @@ export const EinsteinAvatar: React.FC<EinsteinAvatarProps> = ({ mood, quote }) =
     switch(m) {
       case Mood.HAPPY: return '😛';
       case Mood.THINKING: return '🤔';
-      case Mood.EXCITED: return '👍';
+      case Mood.EXCITED: return '🤩';
       case Mood.SHOCKED: return '😱';
       default: return '🧠';
     }
@@ -40,10 +40,9 @@ export const EinsteinAvatar: React.FC<EinsteinAvatarProps> = ({ mood, quote }) =
         max-w-xs text-center border-2 border-neon-blue relative transform transition-all duration-300
         ${animateQuote ? 'scale-105' : 'scale-100'}`}
       >
-        <p className="font-bold text-sm md:text-base font-mono">
+        <p className="font-bold text-sm md:text-base font-mono leading-tight">
           "{quote}"
         </p>
-        {/* Triangle for bubble */}
         <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white border-r-2 border-b-2 border-neon-blue rotate-45"></div>
       </div>
 
@@ -51,25 +50,22 @@ export const EinsteinAvatar: React.FC<EinsteinAvatarProps> = ({ mood, quote }) =
       <div className="relative w-32 h-32 md:w-40 md:h-40">
         <div className="absolute inset-0 bg-neon-pink rounded-full blur-lg opacity-40 animate-pulse"></div>
         
-        {imageError ? (
-          /* Fallback Avatar if image fails to load */
-          <div className="relative w-full h-full rounded-full border-4 border-neon-blue shadow-lg z-10 bg-slate-800 flex items-center justify-center overflow-hidden">
-             <div className="absolute inset-0 bg-gradient-to-b from-slate-700 to-slate-900"></div>
-             <span className="text-6xl relative z-10 animate-bounce-slow filter drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
+        <div className="relative w-full h-full rounded-full border-4 border-neon-blue shadow-lg z-10 bg-slate-800 flex items-center justify-center overflow-hidden">
+          {!imageError ? (
+            <img 
+              key={mood}
+              src={AVATAR_IMAGES[mood]} 
+              alt={`Einstein ${mood}`}
+              onError={() => setImageError(true)}
+              className="w-full h-full object-cover transition-opacity duration-300"
+            />
+          ) : (
+             <span className="text-6xl animate-bounce-slow filter drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
                {getEmojiForMood(mood)}
              </span>
-          </div>
-        ) : (
-          /* Actual Image */
-          <img 
-            src={AVATAR_IMAGES[mood]} 
-            alt={`Einstein ${mood}`}
-            onError={() => setImageError(true)}
-            className="relative w-full h-full object-cover rounded-full border-4 border-neon-blue shadow-lg z-10 bg-slate-800 transition-all duration-500 ease-in-out"
-          />
-        )}
+          )}
+        </div>
         
-        {/* Decorative elements */}
         <div className="absolute -top-2 -right-2 text-2xl animate-bounce-slow z-20">⚛️</div>
       </div>
     </div>

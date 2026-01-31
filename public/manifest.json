@@ -2,7 +2,7 @@
   "name": "5task - Foco Simples",
   "short_name": "5task",
   "description": "Um gerenciador de tarefas focado com limite de 5 itens e a genialidade de Einstein.",
-  "id": "5task-app-v1",
+  "id": "5task-app-v57",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -16,13 +16,13 @@
   "handle_links": "preferred",
   "icons": [
     {
-      "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/Stalk%20logo.png",
+      "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png",
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/Stalk%20logo.png",
+      "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png",
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "maskable"
@@ -35,7 +35,7 @@
       "description": "Adicionar uma nova tarefa rapidamente",
       "url": "/?action=new",
       "icons": [{ 
-        "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/Stalk%20logo.png", 
+        "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png", 
         "sizes": "1024x1024",
         "type": "image/png",
         "purpose": "any" 
@@ -63,7 +63,7 @@
       },
       "icons": [
         {
-          "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/Stalk%20logo.png",
+          "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png",
           "sizes": "1024x1024",
           "type": "image/png"
         }
@@ -81,14 +81,14 @@
   },
   "screenshots": [
     {
-      "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/Stalk%20logo.png",
+      "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png",
       "sizes": "1024x1024",
       "type": "image/png",
       "form_factor": "wide",
       "label": "5task Desktop"
     },
     {
-      "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/Stalk%20logo.png",
+      "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png",
       "sizes": "1024x1024",
       "type": "image/png",
       "form_factor": "narrow",

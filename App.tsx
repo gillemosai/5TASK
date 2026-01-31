@@ -49,13 +49,11 @@ const loadTasksFromDB = async (): Promise<Task[]> => {
 };
 
 const MAX_TASKS = 5;
-// V53: URL do GitHub para garantir o carregamento do logo
 const LOGO_URL = 'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png';
 const SUCCESS_SOUND_URL = 'https://codeskulptor-demos.commondatastorage.googleapis.com/pang/pop.mp3';
-const APP_VERSION = "v53";
+const APP_VERSION = "v57";
 
 const App: React.FC = () => {
-  // --- State ---
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isPersistent, setIsPersistent] = useState(false);
@@ -63,24 +61,19 @@ const App: React.FC = () => {
   const [mood, setMood] = useState<Mood>(Mood.THINKING);
   const [quote, setQuote] = useState<string>(QUOTES.welcome[0]);
   
-  // Refs
   const inputRef = useRef<HTMLInputElement>(null);
   const [activeKanbanTaskId, setActiveKanbanTaskId] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  // D&D Refs
   const dragItem = useRef<number | null>(null);
-  
   const [lastDeletedTask, setLastDeletedTask] = useState<Task | null>(null);
   const [showUndo, setShowUndo] = useState(false);
 
-  // --- Initial Load & Persistence Request ---
+  // Carregamento inicial
   useEffect(() => {
     const setupApp = async () => {
       const savedTasks = await loadTasksFromDB();
       setTasks(savedTasks);
       setIsLoading(false);
-
       if (navigator.storage && navigator.storage.persist) {
         const persistent = await navigator.storage.persist();
         setIsPersistent(persistent);
@@ -89,39 +82,31 @@ const App: React.FC = () => {
     setupApp();
   }, []);
 
-  // --- Auto-Save ---
+  // Auto-Save
   useEffect(() => {
-    if (!isLoading) {
-      saveTasksToDB(tasks);
-    }
+    if (!isLoading) saveTasksToDB(tasks);
   }, [tasks, isLoading]);
 
-  // Handle Action Links
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('action') === 'new') {
-        window.history.replaceState({}, document.title, window.location.pathname);
-        setTimeout(() => inputRef.current?.focus(), 600);
-    }
-  }, []);
-
-  // Avatar Logic
+  // Management of Mood based on state (idle or full)
   useEffect(() => {
     if (isLoading) return;
-    if (activeKanbanTaskId && !isSidebarOpen) {
+    
+    // Only apply generic moods if we are not in the middle of a specific action feedback
+    const timer = setTimeout(() => {
+      if (tasks.length === 0) {
         setMood(Mood.THINKING);
-        return;
-    }
-    if (tasks.length === 0) {
-      setMood(Mood.THINKING);
-      setQuote(QUOTES.welcome[Math.floor(Math.random() * QUOTES.welcome.length)]);
-    } else if (tasks.length >= MAX_TASKS) {
-      setMood(Mood.SHOCKED);
-      setQuote(QUOTES.full[Math.floor(Math.random() * QUOTES.full.length)]);
-    }
-  }, [tasks.length, activeKanbanTaskId, isSidebarOpen, isLoading]);
+        setQuote(QUOTES.welcome[Math.floor(Math.random() * QUOTES.welcome.length)]);
+      } else if (tasks.length >= MAX_TASKS) {
+        setMood(Mood.SHOCKED);
+        setQuote(QUOTES.full[Math.floor(Math.random() * QUOTES.full.length)]);
+      } else if (mood !== Mood.HAPPY && mood !== Mood.EXCITED) {
+        setMood(Mood.THINKING);
+      }
+    }, 3000); // 3 seconds of action feedback before reverting to state mood
 
-  // Actions
+    return () => clearTimeout(timer);
+  }, [tasks.length, isLoading]);
+
   const addTask = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTaskText.trim() || tasks.length >= MAX_TASKS) return;
@@ -141,18 +126,16 @@ const App: React.FC = () => {
   };
 
   const toggleComplete = (id: string) => {
-    setTasks(prev => prev.map(t => {
-      if (t.id === id) {
-        const isNowComplete = !t.completed;
-        if (isNowComplete) {
-          setMood(Mood.HAPPY);
-          setQuote(QUOTES.complete[Math.floor(Math.random() * QUOTES.complete.length)]);
-          new Audio(SUCCESS_SOUND_URL).play().catch(() => {});
-        }
-        return { ...t, completed: isNowComplete };
+    setTasks(prev => {
+      const newTasks = prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+      const task = newTasks.find(t => t.id === id);
+      if (task?.completed) {
+        setMood(Mood.HAPPY);
+        setQuote(QUOTES.complete[Math.floor(Math.random() * QUOTES.complete.length)]);
+        new Audio(SUCCESS_SOUND_URL).play().catch(() => {});
       }
-      return t;
-    }));
+      return newTasks;
+    });
   };
 
   const deleteTask = (id: string) => {
@@ -163,6 +146,7 @@ const App: React.FC = () => {
       setTasks(prev => prev.filter(t => t.id !== id));
       if (activeKanbanTaskId === id) setActiveKanbanTaskId(null);
       setMood(Mood.EXCITED);
+      setQuote(QUOTES.delete[Math.floor(Math.random() * QUOTES.delete.length)]);
     }
   };
 
@@ -174,7 +158,6 @@ const App: React.FC = () => {
     <div className="min-h-screen bg-slate-950 flex justify-center py-4 md:py-8 px-4 selection:bg-neon-purple/30">
       <div className={`w-full transition-all duration-500 flex flex-col md:flex-row gap-6 ${isSidebarOpen ? 'max-w-[1400px]' : 'max-w-lg'}`}>
         
-        {/* Lado Esquerdo: Main UI */}
         <main className={`flex flex-col w-full shrink-0 ${isSidebarOpen ? 'md:w-80 lg:w-96' : 'mx-auto'} ${activeKanbanTaskId && !isSidebarOpen ? 'hidden' : 'block'} pb-20`}>
             <header className="flex items-center justify-between mb-6 bg-slate-900/60 p-4 rounded-3xl border border-slate-800 backdrop-blur-xl">
                 <div className="flex items-center gap-3">
@@ -256,7 +239,6 @@ const App: React.FC = () => {
             </footer>
         </main>
 
-        {/* Lado Direito: Kanban Board */}
         {(activeKanbanTaskId || isSidebarOpen) && (
             <aside className={`transition-all duration-500 flex flex-col bg-slate-900/40 rounded-[2.5rem] border border-slate-800 p-6 backdrop-blur-md
                 ${isSidebarOpen ? 'flex-1 opacity-100' : activeKanbanTaskId ? 'fixed inset-0 z-50 rounded-none p-4' : 'w-0 opacity-0 overflow-hidden'}`}>
@@ -276,7 +258,6 @@ const App: React.FC = () => {
             </aside>
         )}
 
-        {/* Toast Desfazer */}
         {showUndo && (
             <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] bg-slate-800 text-white px-6 py-4 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-6 animate-[slideUp_0.3s_ease]">
                 <span className="text-sm">Matéria recuperada.</span>
