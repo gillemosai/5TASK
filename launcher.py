@@ -4,11 +4,19 @@ import time
 import os
 import sys
 import signal
-import winreg
 import shlex
+
+# Importações específicas de sistema
+if os.name == 'nt':
+    import winreg
+else:
+    import shutil # Para encontrar executáveis no path no Linux
 
 def get_default_browser_command():
     """Tries to find the command for the default HTTP browser from the Windows Registry."""
+    if os.name != 'nt':
+        return None
+        
     try:
         # Check UserChoice for specific protocol handler
         key_path = r"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice"
@@ -45,12 +53,23 @@ def find_browser_executable():
 
     # 2. Fallback: Search for Edge (Guaranteed on Windows) or Chrome
     print("Buscando navegadores alternativos...")
-    possible_paths = [
-        r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
-        r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
-        r"C:\Program Files\Google\Chrome\Application\chrome.exe",
-        r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
-    ]
+    
+    possible_paths = []
+    
+    if os.name == 'nt':
+        possible_paths = [
+            r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
+            r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
+            r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+            r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
+        ]
+    else:
+        # Linux paths/commands
+        linux_browsers = ['google-chrome', 'google-chrome-stable', 'chromium', 'chromium-browser', 'microsoft-edge-stable', 'microsoft-edge']
+        for browser in linux_browsers:
+            path = shutil.which(browser)
+            if path:
+                possible_paths.append(path)
     
     for path in possible_paths:
         if os.path.exists(path):
@@ -63,9 +82,13 @@ def cleanup_server(server_process):
     """Terminates the server process tree."""
     print("\nEncerrando o servidor e processos filhos...")
     try:
-        # On Windows, taskkill is more reliable for killing process trees
-        subprocess.run(["taskkill", "/F", "/T", "/PID", str(server_process.pid)], 
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        if os.name == 'nt':
+            # On Windows, taskkill is more reliable for killing process trees
+            subprocess.run(["taskkill", "/F", "/T", "/PID", str(server_process.pid)], 
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        else:
+            # On Linux/Unix, kill the process group
+            os.killpg(os.getpgid(server_process.pid), signal.SIGTERM)
     except Exception as e:
         print(f"Erro ao encerrar processos: {e}")
 
@@ -82,10 +105,16 @@ def main():
     print("Iniciando o Servidor (npm run dev)...")
     try:
         # Create a new process group so we can kill the whole tree later
+        # On Linux use start_new_session=True, on Windows default is fine but CreationFlags could be used
+        kwargs = {}
+        if os.name != 'nt':
+            kwargs['start_new_session'] = True
+
         server_process = subprocess.Popen(
             ['npm', 'run', 'dev'], 
             cwd=base_dir, 
-            shell=True
+            shell=True,
+            **kwargs
         )
     except Exception as e:
         print(f"Erro ao iniciar o servidor: {e}")

@@ -59,6 +59,15 @@ Se você está no Windows 10 ou 11, criamos um instalador automático que config
 
 *Para um guia detalhado, consulte o arquivo [`MANUAL_INSTALACAO.md`](MANUAL_INSTALACAO.md).*
 
+### 🐧 Instalação no Linux / Mac
+
+Para usuários de Linux ou macOS, o processo é via terminal:
+
+1.  Abra o terminal na pasta do projeto.
+2.  Dê permissão de execução: `chmod +x install.sh`
+3.  Execute o instalador: `./install.sh`
+4.  O app pode ser iniciado com `python3 launcher.py` ou pelo atalho criado.
+
 ---
 
 ### 💻 Instalação Manual (Para Desenvolvedores)
