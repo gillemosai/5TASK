@@ -1,14 +1,15 @@
-const CACHE_NAME = '5task-engine-v63';
+const CACHE_NAME = '5task-engine-v64';
+const GITHUB_ASSETS = 'https://raw.githubusercontent.com/gillemosai/5task/main/assets/';
 
 const APP_SHELL = [
   './',
   './index.html',
-  './manifest.json?v=63',
-  './assets/5task-logo.png',
-  './assets/einstein-happy.png',
-  './assets/einstein-skeptical.png',
-  './assets/einstein-ecstatic.png',
-  './assets/einstein-worried.png',
+  './manifest.json?v=64',
+  `${GITHUB_ASSETS}5task-logo.png`,
+  `${GITHUB_ASSETS}einstein-happy.png`,
+  `${GITHUB_ASSETS}einstein-skeptical.png`,
+  `${GITHUB_ASSETS}einstein-ecstatic.png`,
+  `${GITHUB_ASSETS}einstein-worried.png`,
   'https://cdn.tailwindcss.com',
   'https://codeskulptor-demos.commondatastorage.googleapis.com/pang/pop.mp3'
 ];

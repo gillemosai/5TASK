@@ -1,13 +1,15 @@
 import { Mood, QuoteType } from './types';
 
-// Usamos caminhos relativos para garantir compatibilidade PWA e evitar erros de Cross-Origin
-const ASSETS_BASE = './assets/';
+import einsteinHappy from './assets/einstein-happy.png';
+import einsteinSkeptical from './assets/einstein-skeptical.png';
+import einsteinEcstatic from './assets/einstein-ecstatic.png';
+import einsteinWorried from './assets/einstein-worried.png';
 
 export const AVATAR_IMAGES: Record<Mood, string> = {
-  [Mood.HAPPY]: `${ASSETS_BASE}einstein-happy.png`,
-  [Mood.THINKING]: `${ASSETS_BASE}einstein-skeptical.png`,
-  [Mood.EXCITED]: `${ASSETS_BASE}einstein-ecstatic.png`,
-  [Mood.SHOCKED]: `${ASSETS_BASE}einstein-worried.png`,
+  [Mood.HAPPY]: einsteinHappy,
+  [Mood.THINKING]: einsteinSkeptical,
+  [Mood.EXCITED]: einsteinEcstatic,
+  [Mood.SHOCKED]: einsteinWorried,
 };
 
 export const QUOTES: Record<QuoteType, string[]> = {

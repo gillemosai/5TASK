@@ -1,0 +1,27 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Task {
+  id        String    @id @default(uuid())
+  text      String
+  completed Boolean   @default(false)
+  createdAt Float     // Using Float to store Date.now() timestamp directly
+  subTasks  SubTask[]
+}
+
+model SubTask {
+  id        String  @id @default(uuid())
+  taskId    String
+  task      Task    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  text      String
+  column    String  // 'todo', 'doing', 'done'
+  createdAt Float
+}
