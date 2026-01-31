@@ -1,4 +1,4 @@
-const CACHE_NAME = '5task-engine-v57';
+const CACHE_NAME = '5task-engine-v59';
 const GITHUB_ASSETS = 'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/';
 
 const APP_SHELL = [

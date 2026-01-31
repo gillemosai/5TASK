@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Plus, Trash2, Undo2, X, Download, StickyNote, ArrowRight, RefreshCw, Database } from 'lucide-react';
 import { Task, Mood, QuoteType, SubTask } from './types';
-import { QUOTES } from './constants';
+import { QUOTES, AVATAR_IMAGES } from './constants';
 import { EinsteinAvatar } from './components/EinsteinAvatar';
 import { TaskItem } from './components/TaskItem';
 import { KanbanBoard } from './components/KanbanBoard';
@@ -31,7 +31,7 @@ const saveTasksToDB = async (tasks: Task[]) => {
     tx.objectStore(STORE_NAME).put(tasks, 'current_tasks');
     return new Promise((resolve) => { tx.oncomplete = resolve; });
   } catch (e) {
-    console.error("Falha crítica ao gravar no banco:", e);
+    console.error("Falha ao gravar no banco:", e);
   }
 };
 
@@ -48,10 +48,21 @@ const loadTasksFromDB = async (): Promise<Task[]> => {
   }
 };
 
+const preloadImages = () => {
+  const imagesToPreload = [
+    'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png',
+    ...Object.values(AVATAR_IMAGES)
+  ];
+  imagesToPreload.forEach(src => {
+    const img = new Image();
+    img.src = src;
+  });
+};
+
 const MAX_TASKS = 5;
 const LOGO_URL = 'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png';
 const SUCCESS_SOUND_URL = 'https://codeskulptor-demos.commondatastorage.googleapis.com/pang/pop.mp3';
-const APP_VERSION = "v57";
+const APP_VERSION = "v59";
 
 const App: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -68,43 +79,41 @@ const App: React.FC = () => {
   const [lastDeletedTask, setLastDeletedTask] = useState<Task | null>(null);
   const [showUndo, setShowUndo] = useState(false);
 
-  // Carregamento inicial
+  // Carregamento inicial ultra-otimizado
   useEffect(() => {
     const setupApp = async () => {
+      preloadImages(); // Inicia o download das imagens imediatamente
       const savedTasks = await loadTasksFromDB();
       setTasks(savedTasks);
-      setIsLoading(false);
+      
       if (navigator.storage && navigator.storage.persist) {
         const persistent = await navigator.storage.persist();
         setIsPersistent(persistent);
       }
+      
+      setIsLoading(false);
+      // Notifica o index.html que o app está pronto para remover o splash screen
+      window.dispatchEvent(new Event('app-ready'));
     };
     setupApp();
   }, []);
 
-  // Auto-Save
+  // Auto-Save reativo
   useEffect(() => {
     if (!isLoading) saveTasksToDB(tasks);
   }, [tasks, isLoading]);
 
-  // Management of Mood based on state (idle or full)
+  // Gestão de humor baseada no estado das tarefas
   useEffect(() => {
     if (isLoading) return;
     
-    // Only apply generic moods if we are not in the middle of a specific action feedback
-    const timer = setTimeout(() => {
-      if (tasks.length === 0) {
-        setMood(Mood.THINKING);
-        setQuote(QUOTES.welcome[Math.floor(Math.random() * QUOTES.welcome.length)]);
-      } else if (tasks.length >= MAX_TASKS) {
-        setMood(Mood.SHOCKED);
-        setQuote(QUOTES.full[Math.floor(Math.random() * QUOTES.full.length)]);
-      } else if (mood !== Mood.HAPPY && mood !== Mood.EXCITED) {
-        setMood(Mood.THINKING);
-      }
-    }, 3000); // 3 seconds of action feedback before reverting to state mood
-
-    return () => clearTimeout(timer);
+    if (tasks.length === 0) {
+      setMood(Mood.THINKING);
+      setQuote(QUOTES.welcome[Math.floor(Math.random() * QUOTES.welcome.length)]);
+    } else if (tasks.length >= MAX_TASKS) {
+      setMood(Mood.SHOCKED);
+      setQuote(QUOTES.full[Math.floor(Math.random() * QUOTES.full.length)]);
+    }
   }, [tasks.length, isLoading]);
 
   const addTask = (e: React.FormEvent) => {
@@ -123,6 +132,11 @@ const App: React.FC = () => {
     setNewTaskText('');
     setMood(Mood.HAPPY);
     setQuote(QUOTES.add[Math.floor(Math.random() * QUOTES.add.length)]);
+    
+    // Volta para o estado pensativo após a animação de sucesso
+    setTimeout(() => {
+        if (tasks.length + 1 < MAX_TASKS) setMood(Mood.THINKING);
+    }, 3000);
   };
 
   const toggleComplete = (id: string) => {
@@ -130,9 +144,12 @@ const App: React.FC = () => {
       const newTasks = prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
       const task = newTasks.find(t => t.id === id);
       if (task?.completed) {
-        setMood(Mood.HAPPY);
+        setMood(Mood.EXCITED);
         setQuote(QUOTES.complete[Math.floor(Math.random() * QUOTES.complete.length)]);
         new Audio(SUCCESS_SOUND_URL).play().catch(() => {});
+        setTimeout(() => {
+             if (tasks.length < MAX_TASKS) setMood(Mood.THINKING);
+        }, 3000);
       }
       return newTasks;
     });
@@ -147,6 +164,7 @@ const App: React.FC = () => {
       if (activeKanbanTaskId === id) setActiveKanbanTaskId(null);
       setMood(Mood.EXCITED);
       setQuote(QUOTES.delete[Math.floor(Math.random() * QUOTES.delete.length)]);
+      setTimeout(() => setShowUndo(false), 5000);
     }
   };
 
@@ -159,20 +177,20 @@ const App: React.FC = () => {
       <div className={`w-full transition-all duration-500 flex flex-col md:flex-row gap-6 ${isSidebarOpen ? 'max-w-[1400px]' : 'max-w-lg'}`}>
         
         <main className={`flex flex-col w-full shrink-0 ${isSidebarOpen ? 'md:w-80 lg:w-96' : 'mx-auto'} ${activeKanbanTaskId && !isSidebarOpen ? 'hidden' : 'block'} pb-20`}>
-            <header className="flex items-center justify-between mb-6 bg-slate-900/60 p-4 rounded-3xl border border-slate-800 backdrop-blur-xl">
+            <header className="flex items-center justify-between mb-6 bg-slate-900/60 p-3 rounded-2xl border border-slate-800 backdrop-blur-xl">
                 <div className="flex items-center gap-3">
-                    <img src={LOGO_URL} alt="5task" className="w-10 h-10 object-contain drop-shadow-[0_0_8px_rgba(0,243,255,0.4)]" />
-                    <h1 className="text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-purple">5task</h1>
+                    <img src={LOGO_URL} alt="5task" className="w-9 h-9 object-contain drop-shadow-[0_0_8px_rgba(0,243,255,0.4)]" />
+                    <h1 className="text-xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-purple">5task</h1>
                 </div>
-                <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className={`p-2 rounded-2xl border transition-all ${isSidebarOpen ? 'bg-neon-purple border-neon-blue' : 'bg-slate-800 border-slate-700'}`}>
-                    <StickyNote size={20} className={isSidebarOpen ? 'text-white' : 'text-slate-400'} />
+                <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className={`p-2 rounded-xl border transition-all ${isSidebarOpen ? 'bg-neon-purple border-neon-blue' : 'bg-slate-800 border-slate-700'}`}>
+                    <StickyNote size={18} className={isSidebarOpen ? 'text-white' : 'text-slate-400'} />
                 </button>
             </header>
 
             <EinsteinAvatar mood={mood} quote={quote} />
 
             <div className="flex justify-between items-center mb-2 px-2">
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Fluxo de Eventos</span>
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Prioridades</span>
                 <span className={`text-xs font-mono px-3 py-1 rounded-full border ${tasks.length >= MAX_TASKS ? 'border-red-500/50 text-red-400' : 'border-neon-blue/30 text-neon-blue'}`}>
                     {tasks.length} / {MAX_TASKS}
                 </span>
@@ -185,8 +203,8 @@ const App: React.FC = () => {
                     value={newTaskText}
                     onChange={(e) => setNewTaskText(e.target.value)}
                     disabled={tasks.length >= MAX_TASKS}
-                    placeholder={tasks.length >= MAX_TASKS ? "Limite de Massa Atendido" : "Próxima observação..."}
-                    className="w-full bg-slate-900/90 text-white pl-5 pr-14 py-4 rounded-2xl border-2 border-slate-800 focus:border-neon-blue/50 focus:ring-4 focus:ring-neon-blue/5 outline-none transition-all placeholder:text-slate-600 shadow-2xl"
+                    placeholder={tasks.length >= MAX_TASKS ? "Massa Crítica Atingida" : "Nova observação..."}
+                    className="w-full bg-slate-900/90 text-white pl-5 pr-14 py-4 rounded-2xl border-2 border-slate-800 focus:border-neon-blue/50 outline-none transition-all placeholder:text-slate-600 shadow-2xl"
                 />
                 <button type="submit" disabled={tasks.length >= MAX_TASKS || !newTaskText.trim()} className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 bg-neon-purple text-white rounded-xl hover:scale-105 active:scale-95 disabled:opacity-30 transition-all">
                     <Plus size={20} />
@@ -195,42 +213,39 @@ const App: React.FC = () => {
 
             <div className="space-y-3 mb-8">
                 {tasks.map((task, index) => (
-                    <div key={task.id} 
-                         className="transition-all"
-                         onClick={() => isSidebarOpen && setActiveKanbanTaskId(task.id)}>
-                        <TaskItem
-                            index={index}
-                            task={task}
-                            isActive={activeKanbanTaskId === task.id}
-                            onComplete={toggleComplete}
-                            onDelete={deleteTask}
-                            onEdit={(id, text) => setTasks(prev => prev.map(t => t.id === id ? {...t, text} : t))}
-                            onOpenKanban={(id) => setActiveKanbanTaskId(id)}
-                            onDragStart={(e, pos) => { dragItem.current = pos; }}
-                            onDragEnter={(e, pos) => {
-                                if (dragItem.current !== null && dragItem.current !== pos) {
-                                    const _tasks = [...tasks];
-                                    const dragged = _tasks[dragItem.current];
-                                    _tasks.splice(dragItem.current, 1);
-                                    _tasks.splice(pos, 0, dragged);
-                                    dragItem.current = pos;
-                                    setTasks(_tasks);
-                                }
-                            }}
-                            onDragEnd={() => { dragItem.current = null; }}
-                        />
-                    </div>
+                    <TaskItem
+                        key={task.id}
+                        index={index}
+                        task={task}
+                        isActive={activeKanbanTaskId === task.id}
+                        onComplete={toggleComplete}
+                        onDelete={deleteTask}
+                        onEdit={(id, text) => setTasks(prev => prev.map(t => t.id === id ? {...t, text} : t))}
+                        onOpenKanban={(id) => setActiveKanbanTaskId(id)}
+                        onDragStart={(e, pos) => { dragItem.current = pos; }}
+                        onDragEnter={(e, pos) => {
+                            if (dragItem.current !== null && dragItem.current !== pos) {
+                                const _tasks = [...tasks];
+                                const dragged = _tasks[dragItem.current];
+                                _tasks.splice(dragItem.current, 1);
+                                _tasks.splice(pos, 0, dragged);
+                                dragItem.current = pos;
+                                setTasks(_tasks);
+                            }
+                        }}
+                        onDragEnd={() => { dragItem.current = null; }}
+                    />
                 ))}
                 {tasks.length === 0 && (
-                    <div className="py-12 text-center text-slate-700 border-2 border-dashed border-slate-800/50 rounded-3xl">
-                        <p className="text-sm font-mono">Einstein está em repouso.</p>
+                    <div className="py-12 text-center text-slate-700 border-2 border-dashed border-slate-800/40 rounded-3xl">
+                        <p className="text-sm font-mono opacity-50">Espaço-tempo vazio. Adicione uma tarefa.</p>
                     </div>
                 )}
             </div>
 
             <footer className="mt-auto py-6 text-center space-y-2">
                 <p className="text-[9px] text-slate-600 font-mono tracking-widest uppercase flex items-center justify-center gap-2">
-                    Engine {APP_VERSION} <RefreshCw size={8} className="animate-spin-slow" /> Persistence: Active
+                    Engine {APP_VERSION} <RefreshCw size={8} className="animate-spin-slow" />
                 </p>
                 <div className={`text-[8px] font-bold inline-flex items-center gap-1.5 px-3 py-1 rounded-full border transition-all
                   ${isPersistent ? 'bg-green-500/10 border-green-500/20 text-green-500' : 'bg-orange-500/10 border-orange-500/20 text-orange-500'}`}>
@@ -252,14 +267,14 @@ const App: React.FC = () => {
                 ) : (
                     <div className="h-full flex flex-col items-center justify-center text-slate-600">
                         <StickyNote size={48} className="mb-4 opacity-10" />
-                        <p className="text-xs uppercase tracking-widest font-mono">Selecione uma missão à esquerda</p>
+                        <p className="text-xs uppercase tracking-widest font-mono">Selecione uma tarefa</p>
                     </div>
                 )}
             </aside>
         )}
 
         {showUndo && (
-            <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] bg-slate-800 text-white px-6 py-4 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-6 animate-[slideUp_0.3s_ease]">
+            <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] bg-slate-800 text-white px-6 py-4 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-6 animate-slide-up">
                 <span className="text-sm">Matéria recuperada.</span>
                 <button onClick={() => {
                    if (lastDeletedTask && tasks.length < MAX_TASKS) {

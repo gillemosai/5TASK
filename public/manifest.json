@@ -2,7 +2,7 @@
   "name": "5task - Foco Simples",
   "short_name": "5task",
   "description": "Um gerenciador de tarefas focado com limite de 5 itens e a genialidade de Einstein.",
-  "id": "5task-app-v57",
+  "id": "5task-app-v58",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

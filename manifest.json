@@ -2,12 +2,12 @@
   "name": "5task - Foco Simples",
   "short_name": "5task",
   "description": "Um gerenciador de tarefas focado com limite de 5 itens e a genialidade de Einstein.",
-  "id": "5task-pwa-v57",
+  "id": "5task-pwa-v59",
   "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#020617",
   "theme_color": "#020617",
-  "orientation": "any",
+  "orientation": "portrait",
   "categories": ["productivity", "utilities"],
   "icons": [
     {

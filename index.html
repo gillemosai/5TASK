@@ -2,12 +2,20 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#020617" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>5task</title>
-    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Prefetch assets to speed up initial load -->
+    <link rel="preconnect" href="https://raw.githubusercontent.com">
+    <link rel="preload" as="image" href="https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png">
+    
+    <link rel="manifest" href="/manifest.json?v=59" />
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png" />
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png" />
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -44,21 +52,27 @@
     </script>
     <style>
       html, body {
-        height: auto;
-        min-height: 100%;
+        height: 100%;
         background-color: #020617;
+        overflow-x: hidden;
+        -webkit-tap-highlight-color: transparent;
       }
       body { 
         margin: 0; 
         padding: 0; 
-        overflow-y: auto; 
-        overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
+        overflow-y: auto;
+        overscroll-behavior-y: none;
       }
-      #root { width: 100vw; }
+      #root { width: 100vw; min-height: 100vh; }
       .splash-screen {
         position: fixed; inset: 0; display: flex; flex-direction: column;
         align-items: center; justify-content: center; background: #020617; z-index: 9999;
+        transition: opacity 0.5s ease, visibility 0.5s;
+      }
+      .splash-hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
       }
       ::-webkit-scrollbar { width: 6px; }
       ::-webkit-scrollbar-track { background: #0f172a; }
@@ -89,24 +103,22 @@
         <h1 class="text-2xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-purple">
           5TASK
         </h1>
-        <p class="mt-4 text-[9px] font-mono text-slate-600 uppercase tracking-[0.3em]">Memória Quântica v57 Ativa</p>
+        <p class="mt-4 text-[9px] font-mono text-slate-600 uppercase tracking-[0.3em]">Otimizando Espaço-Tempo v59</p>
       </div>
     </div>
     
     <script type="module" src="/index.tsx"></script>
 
     <script>
-      window.addEventListener('load', () => {
-        setTimeout(() => {
-          const splash = document.getElementById('splash');
-          if (splash) splash.style.display = 'none';
-        }, 800);
+      // Sincronização com o React para esconder o Splash
+      window.addEventListener('app-ready', () => {
+        const splash = document.getElementById('splash');
+        if (splash) splash.classList.add('splash-hidden');
       });
 
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          const swUrl = '/sw.js?v=57';
-          navigator.serviceWorker.register(swUrl, { scope: '/' });
+          navigator.serviceWorker.register('/sw.js?v=59', { scope: '/' });
         });
       }
     </script>
