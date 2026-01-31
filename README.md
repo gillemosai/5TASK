@@ -97,6 +97,17 @@ npm run dev
 ```
 *O app abrirá em: `http://localhost:5173`*
 
+## 📜 Licença
+
+Este projeto está licenciado sob a **GNU AGPL v3.0**.
+
+✔️ Uso gratuito  
+✔️ Modificações permitidas  
+⚠️ Qualquer redistribuição ou uso público deve manter o código aberto  
+
+Veja o arquivo LICENSE para mais detalhes.
+
+
 ## 🗺️ Roadmap de Evolução
 
 - [x] Limite de 5 tarefas e Gamificação inicial.
