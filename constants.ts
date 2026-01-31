@@ -3,10 +3,10 @@ import { Mood, QuoteType } from './types';
 const GITHUB_ASSETS_BASE = 'https://raw.githubusercontent.com/gillemosai/5task/main/assets/';
 
 export const AVATAR_IMAGES: Record<Mood, string> = {
-  [Mood.HAPPY]: `${GITHUB_ASSETS_BASE}einstein-happy.png?v=61`,
-  [Mood.THINKING]: `${GITHUB_ASSETS_BASE}einstein-skeptical.png?v=61`,
-  [Mood.EXCITED]: `${GITHUB_ASSETS_BASE}einstein-ecstatic.png?v=61`,
-  [Mood.SHOCKED]: `${GITHUB_ASSETS_BASE}einstein-worried.png?v=61`,
+  [Mood.HAPPY]: `${GITHUB_ASSETS_BASE}einstein-happy.png?v=62`,
+  [Mood.THINKING]: `${GITHUB_ASSETS_BASE}einstein-skeptical.png?v=62`,
+  [Mood.EXCITED]: `${GITHUB_ASSETS_BASE}einstein-ecstatic.png?v=62`,
+  [Mood.SHOCKED]: `${GITHUB_ASSETS_BASE}einstein-worried.png?v=62`,
 };
 
 export const QUOTES: Record<QuoteType, string[]> = {

@@ -53,9 +53,9 @@ const loadTasksFromDB = async (): Promise<Task[]> => {
 };
 
 const MAX_TASKS = 5;
-const LOGO_URL = 'https://raw.githubusercontent.com/gillemosai/5task/main/assets/5task-logo.png?v=61';
+const LOGO_URL = 'https://raw.githubusercontent.com/gillemosai/5task/main/assets/5task-logo.png?v=62';
 const SUCCESS_SOUND_URL = 'https://codeskulptor-demos.commondatastorage.googleapis.com/pang/pop.mp3';
-const APP_VERSION = "v61";
+const APP_VERSION = "v62";
 
 const App: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -72,7 +72,7 @@ const App: React.FC = () => {
   const [lastDeletedTask, setLastDeletedTask] = useState<Task | null>(null);
   const [showUndo, setShowUndo] = useState(false);
 
-  // Carregamento inicial ultra-otimizado
+  // Carregamento inicial
   useEffect(() => {
     const setupApp = async () => {
       const savedTasks = await loadTasksFromDB();
