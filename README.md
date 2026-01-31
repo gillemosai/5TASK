@@ -48,15 +48,30 @@ O app utiliza a figura de **Albert Einstein** como seu mentor quântico, reagind
 
 ## ⚙️ Instalação e Execução
 
-Para rodar o projeto completo (Frontend + Backend), você precisará de dois terminais abertos.
+### 🚀 Instalação Rápida (Recomendado para Usuários)
 
-### 1. Clonar o repositório
+Se você está no Windows 10 ou 11, criamos um instalador automático que configura todo o ambiente (Node.js, Python, Dependências e Atalho) com um único clique.
+
+1.  Baixe o repositório.
+2.  Execute o arquivo **`Instalar Tudo.bat`** como Administrador.
+3.  Aguarde o término da instalação.
+4.  Use o atalho **`5Task App`** criado na sua área de trabalho.
+
+*Para um guia detalhado, consulte o arquivo [`MANUAL_INSTALACAO.md`](MANUAL_INSTALACAO.md).*
+
+---
+
+### 💻 Instalação Manual (Para Desenvolvedores)
+
+Para rodar o projeto completo (Frontend + Backend) manualmente, você precisará de dois terminais abertos.
+
+#### 1. Clonar o repositório
 ```bash
 git clone https://github.com/gillemosai/5task.git
 cd 5task
 ```
 
-### 2. Configurar o Backend
+#### 2. Configurar o Backend
 ```bash
 cd server
 npm install
@@ -65,7 +80,7 @@ npm run dev
 ```
 *O servidor rodará em: `http://localhost:3001`*
 
-### 3. Configurar o Frontend
+#### 3. Configurar o Frontend
 Em um novo terminal, na raiz do projeto:
 ```bash
 npm install
