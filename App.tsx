@@ -6,11 +6,13 @@ import { EinsteinAvatar } from './components/EinsteinAvatar';
 import { TaskItem } from './components/TaskItem';
 import { KanbanBoard } from './components/KanbanBoard';
 
-// --- Database Engine (IndexedDB + Persistent Storage API) ---
+// --- Database Engine (Singleton) ---
+let dbInstance: IDBDatabase | null = null;
 const DB_NAME = '5task_db';
 const STORE_NAME = 'tasks_store';
 
-const initDB = (): Promise<IDBDatabase> => {
+const getDB = (): Promise<IDBDatabase> => {
+  if (dbInstance) return Promise.resolve(dbInstance);
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, 1);
     request.onupgradeneeded = () => {
@@ -19,25 +21,27 @@ const initDB = (): Promise<IDBDatabase> => {
         db.createObjectStore(STORE_NAME);
       }
     };
-    request.onsuccess = () => resolve(request.result);
+    request.onsuccess = () => {
+      dbInstance = request.result;
+      resolve(dbInstance);
+    };
     request.onerror = () => reject(request.error);
   });
 };
 
 const saveTasksToDB = async (tasks: Task[]) => {
   try {
-    const db = await initDB();
+    const db = await getDB();
     const tx = db.transaction(STORE_NAME, 'readwrite');
     tx.objectStore(STORE_NAME).put(tasks, 'current_tasks');
-    return new Promise((resolve) => { tx.oncomplete = resolve; });
   } catch (e) {
-    console.error("Falha ao gravar no banco:", e);
+    console.warn("Falha ao persistir dados localmente.");
   }
 };
 
 const loadTasksFromDB = async (): Promise<Task[]> => {
   try {
-    const db = await initDB();
+    const db = await getDB();
     return new Promise((resolve) => {
       const request = db.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME).get('current_tasks');
       request.onsuccess = () => resolve(request.result || []);
@@ -48,21 +52,10 @@ const loadTasksFromDB = async (): Promise<Task[]> => {
   }
 };
 
-const preloadImages = () => {
-  const imagesToPreload = [
-    'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png',
-    ...Object.values(AVATAR_IMAGES)
-  ];
-  imagesToPreload.forEach(src => {
-    const img = new Image();
-    img.src = src;
-  });
-};
-
 const MAX_TASKS = 5;
-const LOGO_URL = 'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png';
+const LOGO_URL = 'https://raw.githubusercontent.com/gillemosai/5task/main/assets/5task-logo.png?v=61';
 const SUCCESS_SOUND_URL = 'https://codeskulptor-demos.commondatastorage.googleapis.com/pang/pop.mp3';
-const APP_VERSION = "v59";
+const APP_VERSION = "v61";
 
 const App: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -82,7 +75,6 @@ const App: React.FC = () => {
   // Carregamento inicial ultra-otimizado
   useEffect(() => {
     const setupApp = async () => {
-      preloadImages(); // Inicia o download das imagens imediatamente
       const savedTasks = await loadTasksFromDB();
       setTasks(savedTasks);
       
@@ -92,21 +84,20 @@ const App: React.FC = () => {
       }
       
       setIsLoading(false);
-      // Notifica o index.html que o app está pronto para remover o splash screen
+      // Notifica o index.html que o app está pronto
       window.dispatchEvent(new Event('app-ready'));
     };
     setupApp();
   }, []);
 
-  // Auto-Save reativo
+  // Auto-Save
   useEffect(() => {
     if (!isLoading) saveTasksToDB(tasks);
   }, [tasks, isLoading]);
 
-  // Gestão de humor baseada no estado das tarefas
+  // Gestão de humor
   useEffect(() => {
     if (isLoading) return;
-    
     if (tasks.length === 0) {
       setMood(Mood.THINKING);
       setQuote(QUOTES.welcome[Math.floor(Math.random() * QUOTES.welcome.length)]);
@@ -133,7 +124,6 @@ const App: React.FC = () => {
     setMood(Mood.HAPPY);
     setQuote(QUOTES.add[Math.floor(Math.random() * QUOTES.add.length)]);
     
-    // Volta para o estado pensativo após a animação de sucesso
     setTimeout(() => {
         if (tasks.length + 1 < MAX_TASKS) setMood(Mood.THINKING);
     }, 3000);

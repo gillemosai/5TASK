@@ -1,15 +1,15 @@
-const CACHE_NAME = '5task-engine-v59';
-const GITHUB_ASSETS = 'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/';
+const CACHE_NAME = '5task-engine-v61';
+const GITHUB_ASSETS = 'https://raw.githubusercontent.com/gillemosai/5task/main/assets/';
 
 const APP_SHELL = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  `${GITHUB_ASSETS}5task-logo.png`,
-  `${GITHUB_ASSETS}einstein-happy.png`,
-  `${GITHUB_ASSETS}einstein-skeptical.png`,
-  `${GITHUB_ASSETS}einstein-ecstatic.png`,
-  `${GITHUB_ASSETS}einstein-worried.png`,
+  './',
+  './index.html',
+  './manifest.json',
+  `${GITHUB_ASSETS}5task-logo.png?v=61`,
+  `${GITHUB_ASSETS}einstein-happy.png?v=61`,
+  `${GITHUB_ASSETS}einstein-skeptical.png?v=61`,
+  `${GITHUB_ASSETS}einstein-ecstatic.png?v=61`,
+  `${GITHUB_ASSETS}einstein-worried.png?v=61`,
   'https://cdn.tailwindcss.com',
   'https://codeskulptor-demos.commondatastorage.googleapis.com/pang/pop.mp3'
 ];
@@ -48,7 +48,7 @@ self.addEventListener('fetch', (event) => {
         });
         return networkResponse;
       }).catch(() => {
-        if (request.mode === 'navigate') return caches.match('/index.html');
+        if (request.mode === 'navigate') return caches.match('./index.html');
       });
     })
   );
