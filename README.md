@@ -9,9 +9,9 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-53.0-blueviolet?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/Version-v65-blueviolet?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/Focus-Max-00f3ff?style=for-the-badge" alt="Focus">
-  <img src="https://img.shields.io/badge/PWA-Ready-green?style=for-the-badge" alt="PWA Ready">
+  <img src="https://img.shields.io/badge/Architecture-Fullstack-orange?style=for-the-badge" alt="Architecture">
   <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="License">
 </p>
 
@@ -28,53 +28,58 @@ O app utiliza a figura de **Albert Einstein** como seu mentor quântico, reagind
 - **🛡️ Limite Quântico:** Sistema bloqueia a criação de mais de 5 tarefas para forçar o foco no que é essencial.
 - **👨‍🔬 Mentoria de Einstein:** Avatar dinâmico que muda de expressão (Feliz, Pensativo, Animado, Preocupado) conforme o estado da sua lista.
 - **📋 Quadro Kanban Integrado:** Cada tarefa principal pode ser expandida em um micro-gerenciamento com colunas *A Fazer*, *Andamento* e *Concluído*.
-- **💾 Persistência Offline (Offline First):** Utiliza **IndexedDB** para salvar dados localmente no navegador, garantindo que você nunca perca suas notas, mesmo sem internet.
-- **📱 PWA (Progressive Web App):** Instalável no Android e iOS como um aplicativo nativo, com carregamento instantâneo via Service Workers.
-- **🔄 Drag & Drop:** Reorganize suas prioridades facilmente arrastando os cards das tarefas.
+- **🗄️ Backend SQL Persistente:** O sistema agora conta com um backend robusto (Node.js + Prisma + SQLite/PostgreSQL) para garantir que seus dados sejam salvos permanentemente, sem risco de perda ao limpar o cache do navegador.
 - **⚡ Interface Neon-Noir:** Design escuro e moderno com toques neon para reduzir a fadiga visual e aumentar a imersão.
+- **🔄 Updates em Tempo Real:** Interações instantâneas e feedback visual fluido.
 
 ## 🛠️ Tecnologias Utilizadas
 
+### Frontend
 - **[React](https://react.dev/):** Biblioteca para interfaces de usuário modernas e reativas.
-- **[Tailwind CSS](https://tailwindcss.com/):** Framework CSS utilitário para design responsivo e animações fluidas.
-- **[Lucide React](https://lucide.dev/):** Conjunto de ícones leves e elegantes.
-- **[IndexedDB](https://developer.mozilla.org/pt-BR/docs/Web/API/IndexedDB_API):** Banco de dados local robusto para armazenamento permanente.
-- **[Service Workers](https://developer.mozilla.org/pt-BR/docs/Web/API/Service_Worker_API):** Tecnologia para cache inteligente e funcionamento offline.
+- **[Tailwind CSS](https://tailwindcss.com/):** Framework CSS utilitário para design responsivo.
+- **[Lucide React](https://lucide.dev/):** Ícones elegantes e leves.
 
-## ⚙️ Instalação Local
+### Backend
+- **[Node.js](https://nodejs.org/):** Runtime JavaScript para o servidor.
+- **[Express](https://expressjs.com/):** Framework web rápido e minimalista.
+- **[Prisma](https://www.prisma.io/):** ORM moderno para Node.js e TypeScript.
+- **[SQLite](https://www.sqlite.org/):** Banco de dados SQL leve e embarcado (padrão).
+- **[PostgreSQL](https://www.postgresql.org/):** Suporte nativo para produção via troca de provider.
 
-1.  **Clone o repositório:**
-    ```bash
-    git clone https://github.com/gillemosai/5task.git
-    cd 5task
-    ```
+## ⚙️ Instalação e Execução
 
-2.  **Instale as dependências:**
-    ```bash
-    npm install
-    ```
+Para rodar o projeto completo (Frontend + Backend), você precisará de dois terminais abertos.
 
-3.  **Inicie o ambiente de desenvolvimento:**
-    ```bash
-    npm run dev
-    ```
+### 1. Clonar o repositório
+```bash
+git clone https://github.com/gillemosai/5task.git
+cd 5task
+```
 
-4.  **Verifique os Assets:**
-    Certifique-se de que a pasta `assets/` contenha os arquivos:
-    - `5task-logo.png`
-    - `einstein-happy.png`
-    - `einstein-skeptical.png`
-    - `einstein-ecstatic.png`
-    - `einstein-worried.png`
+### 2. Configurar o Backend
+```bash
+cd server
+npm install
+npx prisma migrate dev --name init # Cria o banco de dados
+npm run dev
+```
+*O servidor rodará em: `http://localhost:3001`*
+
+### 3. Configurar o Frontend
+Em um novo terminal, na raiz do projeto:
+```bash
+npm install
+npm run dev
+```
+*O app abrirá em: `http://localhost:5173`*
 
 ## 🗺️ Roadmap de Evolução
 
 - [x] Limite de 5 tarefas e Gamificação inicial.
-- [x] Persistência local com IndexedDB.
-- [x] Suporte completo a PWA.
 - [x] Micro-Kanban por tarefa.
-- [ ] ☁️ Sincronização opcional com Cloud (Firebase).
-- [ ] 🔔 Notificações Push para lembretes de tarefas paradas.
+- [x] Migração de IndexedDB para Backend SQL (v65).
+- [ ] ☁️ Autenticação de Usuários.
+- [ ] 🔔 Notificações Push.
 - [ ] 📊 Dashboard de Produtividade Quântica.
 
 ---
