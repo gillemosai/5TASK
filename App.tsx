@@ -8,13 +8,13 @@ import { KanbanBoard } from './components/KanbanBoard';
 
 // --- Database Engine (IndexedDB) ---
 let dbInstance: IDBDatabase | null = null;
-const DB_NAME = '5task_quantum_db'; // Nome alterado para evitar conflito com versões anteriores bugadas
+const DB_NAME = '5task_quantum_v68_db'; 
 const STORE_NAME = 'tasks_store';
 
 const getDB = (): Promise<IDBDatabase> => {
   if (dbInstance) return Promise.resolve(dbInstance);
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, 3);
+    const request = indexedDB.open(DB_NAME, 6);
     request.onupgradeneeded = () => {
       const db = request.result;
       if (!db.objectStoreNames.contains(STORE_NAME)) {
@@ -35,7 +35,7 @@ const saveTasksToDB = async (tasks: Task[]) => {
     const tx = db.transaction(STORE_NAME, 'readwrite');
     tx.objectStore(STORE_NAME).put(tasks, 'current_tasks');
   } catch (e) {
-    console.error("Erro crítico na persistência IndexedDB:", e);
+    console.error("Erro na persistência:", e);
   }
 };
 
@@ -54,7 +54,7 @@ const loadTasksFromDB = async (): Promise<Task[]> => {
 
 const MAX_TASKS = 5;
 const SUCCESS_SOUND_URL = 'https://codeskulptor-demos.commondatastorage.googleapis.com/pang/pop.mp3';
-const APP_VERSION = "v65";
+const APP_VERSION = "v68";
 
 const App: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -72,17 +72,14 @@ const App: React.FC = () => {
   const [lastDeletedTask, setLastDeletedTask] = useState<Task | null>(null);
   const [showUndo, setShowUndo] = useState(false);
 
-  // Inicialização e Verificação de Persistência Real
   useEffect(() => {
     const setupApp = async () => {
       const savedTasks = await loadTasksFromDB();
       setTasks(savedTasks);
       
-      // Solicita armazenamento persistente (Storage Manager API)
       if (navigator.storage && navigator.storage.persist) {
         const persistent = await navigator.storage.persist();
         setIsPersistent(persistent);
-        if (persistent) console.log("Status: Armazenamento persistente concedido pelo sistema.");
       }
       
       setIsLoading(false);
@@ -91,12 +88,10 @@ const App: React.FC = () => {
     setupApp();
   }, []);
 
-  // Auto-Save reativo
   useEffect(() => {
     if (!isLoading) saveTasksToDB(tasks);
   }, [tasks, isLoading]);
 
-  // Lógica de Einstein
   useEffect(() => {
     if (isLoading) return;
     if (tasks.length === 0) {
@@ -178,19 +173,16 @@ const App: React.FC = () => {
       try {
         const imported = JSON.parse(event.target?.result as string);
         if (Array.isArray(imported)) {
-          if (confirm("ATENÇÃO: Isso substituirá suas tarefas atuais por este backup. Continuar?")) {
+          if (confirm("ATENÇÃO: Substituir suas tarefas atuais pelo backup?")) {
             setTasks(imported);
-            alert("Sincronização concluída com sucesso!");
           }
-        } else {
-          throw new Error("Formato inválido");
         }
       } catch (err) {
-        alert("Falha na importação: O arquivo não é um backup válido do 5task.");
+        alert("Backup inválido.");
       }
     };
     reader.readAsText(file);
-    e.target.value = ''; // Reset input
+    e.target.value = '';
   };
 
   const activeTaskForKanban = tasks.find(t => t.id === activeKanbanTaskId);
@@ -199,9 +191,9 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 flex justify-center py-4 md:py-8 px-4 selection:bg-neon-purple/30">
-      <div className={`w-full transition-all duration-500 flex flex-col md:flex-row gap-6 ${isSidebarOpen ? 'max-w-[1400px]' : 'max-w-lg'}`}>
+      <div className={`w-full transition-all duration-700 ease-in-out flex flex-col md:flex-row gap-6 ${isSidebarOpen ? 'max-w-[1400px]' : activeKanbanTaskId ? 'max-w-7xl' : 'max-w-lg'}`}>
         
-        <main className={`flex flex-col w-full shrink-0 ${isSidebarOpen ? 'md:w-80 lg:w-96' : 'mx-auto'} ${activeKanbanTaskId && !isSidebarOpen ? 'hidden' : 'block'} pb-20`}>
+        <main className={`flex flex-col w-full shrink-0 ${isSidebarOpen ? 'md:w-80 lg:w-96' : 'mx-auto'} ${activeKanbanTaskId && !isSidebarOpen ? 'hidden md:flex md:w-80 lg:w-96' : 'block'} pb-20`}>
             <header className="flex items-center justify-between mb-6 bg-slate-900/60 p-3 rounded-2xl border border-slate-800 backdrop-blur-xl">
                 <div className="flex items-center gap-3">
                     {!logoError ? (
@@ -224,7 +216,7 @@ const App: React.FC = () => {
             <EinsteinAvatar mood={mood} quote={quote} />
 
             <div className="flex justify-between items-center mb-2 px-2">
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Fluxo de Prioridades</span>
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Prioridades de Hoje</span>
                 <span className={`text-xs font-mono px-3 py-1 rounded-full border transition-colors ${tasks.length >= MAX_TASKS ? 'border-red-500/50 text-red-400 bg-red-500/5' : 'border-neon-blue/30 text-neon-blue bg-neon-blue/5'}`}>
                     {tasks.length} / {MAX_TASKS}
                 </span>
@@ -237,7 +229,7 @@ const App: React.FC = () => {
                     value={newTaskText}
                     onChange={(e) => setNewTaskText(e.target.value)}
                     disabled={tasks.length >= MAX_TASKS}
-                    placeholder={tasks.length >= MAX_TASKS ? "Massa Crítica Atingida" : "Focar em quê hoje?..."}
+                    placeholder={tasks.length >= MAX_TASKS ? "Massa Crítica Atingida" : "O que é essencial agora?..."}
                     className="w-full bg-slate-900/90 text-white pl-5 pr-14 py-4 rounded-2xl border-2 border-slate-800 focus:border-neon-blue/50 outline-none transition-all placeholder:text-slate-600 shadow-2xl"
                 />
                 <button type="submit" disabled={tasks.length >= MAX_TASKS || !newTaskText.trim()} className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 bg-neon-purple text-white rounded-xl hover:scale-105 active:scale-95 disabled:opacity-30 transition-all shadow-lg shadow-neon-purple/20">
@@ -280,18 +272,11 @@ const App: React.FC = () => {
 
             <footer className="mt-auto py-6 text-center space-y-4">
                 <div className="flex items-center justify-center gap-3">
-                  <button 
-                    onClick={exportBackup} 
-                    title="Exportar Backup Quântico"
-                    className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold bg-slate-900 border border-slate-800 rounded-lg text-slate-500 hover:text-neon-blue hover:border-neon-blue/30 transition-all"
-                  >
-                    <Download size={12} /> BACKUP
+                  <button onClick={exportBackup} title="Exportar Backup" className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold bg-slate-900 border border-slate-800 rounded-lg text-slate-500 hover:text-neon-blue transition-all">
+                    <Download size={12} /> EXPORTAR
                   </button>
-                  <label 
-                    title="Restaurar do Arquivo"
-                    className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold bg-slate-900 border border-slate-800 rounded-lg text-slate-500 hover:text-neon-purple hover:border-neon-purple/30 transition-all cursor-pointer"
-                  >
-                    <Upload size={12} /> RESTAURAR
+                  <label title="Importar Backup" className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold bg-slate-900 border border-slate-800 rounded-lg text-slate-500 hover:text-neon-purple transition-all cursor-pointer">
+                    <Upload size={12} /> IMPORTAR
                     <input type="file" accept=".json" onChange={importBackup} className="hidden" />
                   </label>
                 </div>
@@ -302,8 +287,8 @@ const App: React.FC = () => {
                     </p>
                     <div 
                       className={`text-[8px] font-black inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full border transition-all cursor-help
-                      ${isPersistent ? 'bg-green-500/10 border-green-500/30 text-green-400 shadow-[0_0_10px_rgba(34,197,94,0.1)]' : 'bg-orange-500/10 border-orange-500/30 text-orange-400'}`}
-                      title={isPersistent ? "O sistema protege seus dados contra limpeza automática." : "Atenção: O sistema pode apagar dados se o disco encher. Instale o PWA para proteger."}
+                      ${isPersistent ? 'bg-green-500/10 border-green-500/30 text-green-400' : 'bg-orange-500/10 border-orange-500/30 text-orange-400'}`}
+                      title={isPersistent ? "Dados Protegidos pelo Sistema." : "Instale o PWA para memória permanente."}
                     >
                       {isPersistent ? <ShieldCheck size={10} /> : <AlertCircle size={10} />} 
                       {isPersistent ? 'PERSISTÊNCIA QUÂNTICA ATIVA' : 'MEMÓRIA TEMPORÁRIA'}
@@ -313,8 +298,8 @@ const App: React.FC = () => {
         </main>
 
         {(activeKanbanTaskId || isSidebarOpen) && (
-            <aside className={`transition-all duration-500 flex flex-col bg-slate-900/40 rounded-[2.5rem] border border-slate-800 p-6 backdrop-blur-md
-                ${isSidebarOpen ? 'flex-1 opacity-100' : activeKanbanTaskId ? 'fixed inset-0 z-50 rounded-none p-4 md:relative md:inset-auto md:w-[60%] md:rounded-[2.5rem]' : 'w-0 opacity-0 overflow-hidden'}`}>
+            <aside className={`transition-all duration-700 flex flex-col bg-slate-900/40 rounded-[2.5rem] border border-slate-800 p-6 backdrop-blur-md
+                ${isSidebarOpen ? 'flex-1 opacity-100' : activeKanbanTaskId ? 'fixed inset-0 z-50 rounded-none p-4 md:relative md:inset-auto md:flex-1 md:rounded-[2.5rem]' : 'w-0 opacity-0 overflow-hidden'}`}>
                 {activeTaskForKanban ? (
                     <KanbanBoard 
                         task={activeTaskForKanban} 
@@ -325,7 +310,7 @@ const App: React.FC = () => {
                 ) : (
                     <div className="h-full flex flex-col items-center justify-center text-slate-600">
                         <StickyNote size={48} className="mb-4 opacity-5" />
-                        <p className="text-[10px] uppercase tracking-widest font-mono opacity-40 text-center">Inicie o colapso da função de onda:<br/>Selecione uma tarefa</p>
+                        <p className="text-[10px] uppercase tracking-widest font-mono opacity-40 text-center">Selecione uma tarefa para detalhar</p>
                     </div>
                 )}
             </aside>
@@ -333,17 +318,17 @@ const App: React.FC = () => {
 
         {showUndo && (
             <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] bg-slate-900/90 backdrop-blur-xl text-white px-6 py-4 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-6 animate-slide-up">
-                <span className="text-sm font-medium">Matéria recuperada.</span>
+                <span className="text-sm font-medium">Recuperado.</span>
                 <button onClick={() => {
                    if (lastDeletedTask && tasks.length < MAX_TASKS) {
                       setTasks(prev => [lastDeletedTask, ...prev]);
                       setShowUndo(false);
                       setLastDeletedTask(null);
                    }
-                }} className="text-neon-blue font-black text-xs flex items-center gap-2 hover:underline tracking-tighter">
+                }} className="text-neon-blue font-black text-xs flex items-center gap-2 hover:underline">
                     <Undo2 size={14} /> DESFAZER
                 </button>
-                <button onClick={() => setShowUndo(false)} className="p-1 hover:bg-slate-800 rounded-lg transition-colors">
+                <button onClick={() => setShowUndo(false)} className="p-1 hover:bg-slate-800 rounded-lg">
                     <X size={14} className="text-slate-500" />
                 </button>
             </div>

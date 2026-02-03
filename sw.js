@@ -1,11 +1,11 @@
-const CACHE_NAME = '5task-engine-v65';
-const GITHUB_ASSETS = 'https://raw.githubusercontent.com/gillemosai/5task/main/assets/';
-const VERSION_QUERY = '?v=65';
+const CACHE_NAME = '5task-engine-v67';
+const GITHUB_ASSETS = 'https://raw.githubusercontent.com/gillemosai/5TASK/refs/heads/main/assets/';
+const VERSION_QUERY = '?v=67';
 
 const APP_SHELL = [
   './',
   './index.html',
-  './manifest.json?v=65',
+  './manifest.json?v=67',
   `${GITHUB_ASSETS}5task-logo.png${VERSION_QUERY}`,
   `${GITHUB_ASSETS}einstein-happy.png${VERSION_QUERY}`,
   `${GITHUB_ASSETS}einstein-skeptical.png${VERSION_QUERY}`,
@@ -43,7 +43,6 @@ self.addEventListener('fetch', (event) => {
         const responseToCache = networkResponse.clone();
         caches.open(CACHE_NAME).then((cache) => {
           const url = new URL(request.url);
-          // Cachear assets importantes de terceiros ou próprios
           if (url.origin === location.origin || url.host.includes('tailwindcss') || url.host.includes('githubusercontent')) {
              cache.put(request, responseToCache);
           }

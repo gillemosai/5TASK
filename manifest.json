@@ -2,7 +2,7 @@
   "name": "5task - Foco Simples",
   "short_name": "5task",
   "description": "Um gerenciador de tarefas focado com limite de 5 itens e a genialidade de Einstein.",
-  "id": "5task-pwa-v62",
+  "id": "5task-pwa-v67",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#020617",
@@ -11,7 +11,7 @@
   "categories": ["productivity", "utilities"],
   "icons": [
     {
-      "src": "https://raw.githubusercontent.com/gillemosai/5task/main/assets/5task-logo.png?v=62",
+      "src": "https://raw.githubusercontent.com/gillemosai/5TASK/refs/heads/main/assets/5task-logo.png?v=67",
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any maskable"
@@ -24,26 +24,10 @@
       "description": "Adicionar uma nova tarefa rapidamente",
       "url": "./index.html?action=new",
       "icons": [{ 
-        "src": "https://raw.githubusercontent.com/gillemosai/5task/main/assets/5task-logo.png?v=62", 
+        "src": "https://raw.githubusercontent.com/gillemosai/5TASK/refs/heads/main/assets/5task-logo.png?v=67", 
         "sizes": "1024x1024",
         "type": "image/png"
       }]
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "https://raw.githubusercontent.com/gillemosai/5task/main/assets/5task-logo.png?v=62",
-      "sizes": "1024x1024",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "5task Desktop"
-    },
-    {
-      "src": "https://raw.githubusercontent.com/gillemosai/5task/main/assets/5task-logo.png?v=62",
-      "sizes": "1024x1024",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "5task Mobile"
     }
   ]
 }
