@@ -8,13 +8,13 @@ import { KanbanBoard } from './components/KanbanBoard';
 
 // --- Database Engine (IndexedDB) ---
 let dbInstance: IDBDatabase | null = null;
-const DB_NAME = '5task_quantum_v71_db'; 
+const DB_NAME = '5task_quantum_v72_db'; 
 const STORE_NAME = 'tasks_store';
 
 const getDB = (): Promise<IDBDatabase> => {
   if (dbInstance) return Promise.resolve(dbInstance);
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, 9);
+    const request = indexedDB.open(DB_NAME, 10);
     request.onupgradeneeded = () => {
       const db = request.result;
       if (!db.objectStoreNames.contains(STORE_NAME)) {
@@ -258,7 +258,7 @@ const App: React.FC = () => {
                <span className="text-[10px] text-slate-400 font-mono uppercase tracking-tighter">Offline First</span>
             </div>
             <div className="h-4 w-[1px] bg-slate-800"></div>
-            <div className="text-[10px] text-slate-500 font-mono">v71.0.0-STABLE</div>
+            <div className="text-[10px] text-slate-500 font-mono">v72.0.0-STABLE</div>
          </div>
       </footer>
     </div>

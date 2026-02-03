@@ -1,7 +1,7 @@
 import { Mood, QuoteType } from './types';
 
-const VERSION_QUERY = '?v=71';
-const GITHUB_BASE = 'https://raw.githubusercontent.com/gillemosai/5task/main/assets/';
+const VERSION_QUERY = '?v=72';
+const GITHUB_BASE = 'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/';
 
 export const AVATAR_IMAGES: Record<Mood, string> = {
   [Mood.HAPPY]: `${GITHUB_BASE}einstein-happy.png${VERSION_QUERY}`,

@@ -1,18 +1,17 @@
-const CACHE_NAME = '5task-engine-v71';
-const GITHUB_ASSETS = 'https://raw.githubusercontent.com/gillemosai/5task/main/assets/';
-const VERSION_QUERY = '?v=71';
+const CACHE_NAME = '5task-engine-v72';
+const GITHUB_ASSETS = 'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/';
+const VERSION_QUERY = '?v=72';
 
 const APP_SHELL = [
   './',
   './index.html',
-  './manifest.json?v=71',
+  './manifest.json?v=72',
   `${GITHUB_ASSETS}5task-logo.png${VERSION_QUERY}`,
   `${GITHUB_ASSETS}einstein-happy.png${VERSION_QUERY}`,
   `${GITHUB_ASSETS}einstein-skeptical.png${VERSION_QUERY}`,
   `${GITHUB_ASSETS}einstein-ecstatic.png${VERSION_QUERY}`,
   `${GITHUB_ASSETS}einstein-worried.png${VERSION_QUERY}`,
-  'https://cdn.tailwindcss.com',
-  'https://codeskulptor-demos.commondatastorage.googleapis.com/pang/pop.mp3'
+  'https://cdn.tailwindcss.com'
 ];
 
 self.addEventListener('install', (event) => {
