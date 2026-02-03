@@ -67,6 +67,10 @@ O app utiliza a figura de **Albert Einstein** como seu mentor quântico, reagind
     - `einstein-ecstatic.png`
     - `einstein-worried.png`
 
+✨ Instalação no Windows, Linux ou Android
+ - Acessar o endereço: https://service-5task-575720767744.us-west1.run.app 
+ - Clicar em instalar o app(PWA)
+
 ## 🗺️ Roadmap de Evolução
 
 - [x] Limite de 5 tarefas e Gamificação inicial.
