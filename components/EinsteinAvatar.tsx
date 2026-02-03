@@ -10,6 +10,7 @@ interface EinsteinAvatarProps {
 export const EinsteinAvatar: React.FC<EinsteinAvatarProps> = ({ mood, quote }) => {
   const [animateQuote, setAnimateQuote] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [isImageLoading, setIsImageLoading] = useState(true);
 
   useEffect(() => {
     setAnimateQuote(true);
@@ -17,8 +18,9 @@ export const EinsteinAvatar: React.FC<EinsteinAvatarProps> = ({ mood, quote }) =
     return () => clearTimeout(timer);
   }, [quote]);
 
-  // Reset error state when mood changes to attempt a reload
+  // Sempre que o humor mudar, reiniciamos o estado de loading e erro
   useEffect(() => {
+    setIsImageLoading(true);
     setImageError(false);
   }, [mood]);
 
@@ -33,41 +35,64 @@ export const EinsteinAvatar: React.FC<EinsteinAvatarProps> = ({ mood, quote }) =
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-4 mb-6 relative">
+    <div className="flex flex-col items-center justify-center p-4 mb-6 relative w-full max-w-sm mx-auto">
+      {/* Balão de Fala */}
       <div 
-        className={`bg-white text-slate-900 rounded-2xl p-4 mb-4 shadow-[0_0_20px_rgba(0,243,255,0.4)] 
-        max-w-xs text-center border-2 border-neon-blue relative transform transition-all duration-300
+        className={`bg-white text-slate-900 rounded-2xl p-4 mb-6 shadow-[0_0_25px_rgba(0,243,255,0.3)] 
+        w-full text-center border-2 border-neon-blue relative transform transition-all duration-300
         ${animateQuote ? 'scale-105' : 'scale-100'}`}
       >
-        <p className="font-black text-sm md:text-base font-mono leading-tight tracking-tight">
+        <p className="font-black text-sm md:text-base font-mono leading-tight tracking-tight px-2">
           "{quote}"
         </p>
         <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white border-r-2 border-b-2 border-neon-blue rotate-45"></div>
       </div>
 
+      {/* Avatar Container */}
       <div className="relative w-32 h-32 md:w-40 md:h-40">
-        <div className="absolute inset-0 bg-neon-pink rounded-full blur-xl opacity-30 animate-pulse"></div>
+        {/* Glow de Fundo */}
+        <div className="absolute inset-0 bg-neon-purple rounded-full blur-2xl opacity-20 animate-pulse"></div>
         
-        <div className="relative w-full h-full rounded-full border-4 border-neon-blue shadow-lg z-10 bg-slate-900 flex items-center justify-center overflow-hidden">
+        <div className="relative w-full h-full rounded-full border-4 border-neon-blue shadow-[0_0_15px_rgba(0,243,255,0.4)] z-10 bg-slate-900 flex items-center justify-center overflow-hidden">
+          
+          {/* Skeleton Loader - Aparece enquanto a imagem carrega */}
+          {isImageLoading && !imageError && (
+            <div className="absolute inset-0 bg-slate-800 animate-pulse flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full border-2 border-neon-blue/20 border-t-neon-blue animate-spin"></div>
+            </div>
+          )}
+
+          {/* Imagem Principal com Fade-in */}
           {!imageError ? (
             <img 
               key={mood}
               src={AVATAR_IMAGES[mood]} 
               alt={`Einstein ${mood}`}
-              onError={() => setImageError(true)}
-              className="w-full h-full object-cover transition-opacity duration-500 animate-[fadeIn_0.5s_ease-in]"
+              onLoad={() => setIsImageLoading(false)}
+              onError={() => {
+                setImageError(true);
+                setIsImageLoading(false);
+              }}
+              loading="eager"
+              decoding="async"
+              className={`w-full h-full object-cover transition-opacity duration-700 ease-out
+                ${isImageLoading ? 'opacity-0' : 'opacity-100'}`}
             />
           ) : (
-             <div className="flex flex-col items-center gap-1">
-                <span className="text-6xl animate-bounce filter drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
+             /* Fallback Mode */
+             <div className="flex flex-col items-center gap-2 animate-fadeIn">
+                <span className="text-6xl filter drop-shadow-[0_0_8px_rgba(0,243,255,0.6)]">
                   {getEmojiForMood(mood)}
                 </span>
-                <span className="text-[8px] font-mono text-slate-500 opacity-50 uppercase">Offline Mode</span>
+                <span className="text-[7px] font-mono text-neon-blue/50 uppercase tracking-widest font-black">Offline Mode</span>
              </div>
           )}
         </div>
         
-        <div className="absolute -top-2 -right-2 text-2xl animate-bounce z-20">⚛️</div>
+        {/* Ícone Flutuante Atom */}
+        <div className="absolute -top-1 -right-1 text-2xl animate-bounce z-20 drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">
+          ⚛️
+        </div>
       </div>
     </div>
   );

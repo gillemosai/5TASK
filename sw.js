@@ -1,11 +1,11 @@
-const CACHE_NAME = '5task-engine-v67';
-const GITHUB_ASSETS = 'https://raw.githubusercontent.com/gillemosai/5TASK/refs/heads/main/assets/';
-const VERSION_QUERY = '?v=67';
+const CACHE_NAME = '5task-engine-v71';
+const GITHUB_ASSETS = 'https://raw.githubusercontent.com/gillemosai/5task/main/assets/';
+const VERSION_QUERY = '?v=71';
 
 const APP_SHELL = [
   './',
   './index.html',
-  './manifest.json?v=67',
+  './manifest.json?v=71',
   `${GITHUB_ASSETS}5task-logo.png${VERSION_QUERY}`,
   `${GITHUB_ASSETS}einstein-happy.png${VERSION_QUERY}`,
   `${GITHUB_ASSETS}einstein-skeptical.png${VERSION_QUERY}`,
