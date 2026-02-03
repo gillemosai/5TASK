@@ -8,12 +8,12 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>5task</title>
     
-    <!-- Preloads com URLs absolutas do GitHub para garantir carregamento -->
-    <link rel="preload" as="image" href="https://raw.githubusercontent.com/gillemosai/5task/main/assets/5task-logo.png">
+    <!-- Preloads estratégicos v65 -->
+    <link rel="preload" as="image" href="https://raw.githubusercontent.com/gillemosai/5task/main/assets/5task-logo.png?v=65">
     
-    <link rel="manifest" href="./manifest.json?v=64" />
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/gillemosai/5task/main/assets/5task-logo.png" />
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/gillemosai/5task/main/assets/5task-logo.png" />
+    <link rel="manifest" href="./manifest.json?v=65" />
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/gillemosai/5task/main/assets/5task-logo.png?v=65" />
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/gillemosai/5task/main/assets/5task-logo.png?v=65" />
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -89,21 +89,20 @@
       }
     }
     </script>
-  <link rel="stylesheet" href="/index.css">
-</head>
+  </head>
   <body class="text-slate-100 antialiased">
     <div id="root">
       <div class="splash-screen" id="splash">
         <div class="relative w-24 h-24 mb-6">
           <div class="absolute inset-0 border-4 border-neon-blue/20 rounded-full animate-spin-slow"></div>
           <div class="absolute inset-0 border-t-4 border-neon-purple rounded-full animate-spin"></div>
-          <img src="https://raw.githubusercontent.com/gillemosai/5task/main/assets/5task-logo.png" 
+          <img src="https://raw.githubusercontent.com/gillemosai/5task/main/assets/5task-logo.png?v=65" 
                class="absolute inset-4 w-16 h-16 object-contain animate-pulse-fast" alt="Logo">
         </div>
         <h1 class="text-2xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-purple">
           5TASK
         </h1>
-        <p class="mt-4 text-[9px] font-mono text-slate-600 uppercase tracking-[0.3em]">Quantum Engine v64 Stable</p>
+        <p class="mt-4 text-[9px] font-mono text-slate-600 uppercase tracking-[0.3em]">Quantum Engine v65 Stable</p>
       </div>
     </div>
     
@@ -117,13 +116,11 @@
 
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          // Registro simplificado usando caminho relativo ao contexto atual
           navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('SW v64 Active'))
-            .catch(err => console.warn('PWA Mode limited:', err.message));
+            .then(reg => console.log('SW v65 Active'))
+            .catch(err => console.warn('PWA Offline mode disabled:', err.message));
         });
       }
     </script>
-  <script type="module" src="/index.tsx"></script>
-</body>
+  </body>
 </html>

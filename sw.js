@@ -1,15 +1,16 @@
-const CACHE_NAME = '5task-engine-v64';
+const CACHE_NAME = '5task-engine-v65';
 const GITHUB_ASSETS = 'https://raw.githubusercontent.com/gillemosai/5task/main/assets/';
+const VERSION_QUERY = '?v=65';
 
 const APP_SHELL = [
   './',
   './index.html',
-  './manifest.json?v=64',
-  `${GITHUB_ASSETS}5task-logo.png`,
-  `${GITHUB_ASSETS}einstein-happy.png`,
-  `${GITHUB_ASSETS}einstein-skeptical.png`,
-  `${GITHUB_ASSETS}einstein-ecstatic.png`,
-  `${GITHUB_ASSETS}einstein-worried.png`,
+  './manifest.json?v=65',
+  `${GITHUB_ASSETS}5task-logo.png${VERSION_QUERY}`,
+  `${GITHUB_ASSETS}einstein-happy.png${VERSION_QUERY}`,
+  `${GITHUB_ASSETS}einstein-skeptical.png${VERSION_QUERY}`,
+  `${GITHUB_ASSETS}einstein-ecstatic.png${VERSION_QUERY}`,
+  `${GITHUB_ASSETS}einstein-worried.png${VERSION_QUERY}`,
   'https://cdn.tailwindcss.com',
   'https://codeskulptor-demos.commondatastorage.googleapis.com/pang/pop.mp3'
 ];
@@ -42,6 +43,7 @@ self.addEventListener('fetch', (event) => {
         const responseToCache = networkResponse.clone();
         caches.open(CACHE_NAME).then((cache) => {
           const url = new URL(request.url);
+          // Cachear assets importantes de terceiros ou próprios
           if (url.origin === location.origin || url.host.includes('tailwindcss') || url.host.includes('githubusercontent')) {
              cache.put(request, responseToCache);
           }

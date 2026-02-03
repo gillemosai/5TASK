@@ -1,16 +1,18 @@
 import { Mood, QuoteType } from './types';
 
-import einsteinHappy from './assets/einstein-happy.png';
-import einsteinSkeptical from './assets/einstein-skeptical.png';
-import einsteinEcstatic from './assets/einstein-ecstatic.png';
-import einsteinWorried from './assets/einstein-worried.png';
+// URLs Absolutas do GitHub (Case-sensitive) para garantir carregamento em qualquer ambiente
+// Adicionado parâmetro de versão para forçar atualização do cache do navegador
+const VERSION_QUERY = '?v=65';
+const GITHUB_BASE = 'https://raw.githubusercontent.com/gillemosai/5task/main/assets/';
 
 export const AVATAR_IMAGES: Record<Mood, string> = {
-  [Mood.HAPPY]: einsteinHappy,
-  [Mood.THINKING]: einsteinSkeptical,
-  [Mood.EXCITED]: einsteinEcstatic,
-  [Mood.SHOCKED]: einsteinWorried,
+  [Mood.HAPPY]: `${GITHUB_BASE}einstein-happy.png${VERSION_QUERY}`,
+  [Mood.THINKING]: `${GITHUB_BASE}einstein-skeptical.png${VERSION_QUERY}`,
+  [Mood.EXCITED]: `${GITHUB_BASE}einstein-ecstatic.png${VERSION_QUERY}`,
+  [Mood.SHOCKED]: `${GITHUB_BASE}einstein-worried.png${VERSION_QUERY}`,
 };
+
+export const LOGO_URL = `${GITHUB_BASE}5task-logo.png${VERSION_QUERY}`;
 
 export const QUOTES: Record<QuoteType, string[]> = {
   welcome: [
