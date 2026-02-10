@@ -9,75 +9,73 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-53.0-blueviolet?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/Version-76.0-blueviolet?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/Focus-Max-00f3ff?style=for-the-badge" alt="Focus">
   <img src="https://img.shields.io/badge/PWA-Ready-green?style=for-the-badge" alt="PWA Ready">
-  <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="License">
+  <img src="https://img.shields.io/badge/Theme-Dual-yellow?style=for-the-badge" alt="Dual Theme">
 </p>
 
 ---
 
 ## 🚀 Sobre o Projeto
 
-O **5task** é um gerenciador de tarefas minimalista e gamificado, desenhado sob o princípio da **Priorização Radical**. Em um mundo de distrações infinitas, o 5task impõe um limite físico de apenas **5 tarefas simultâneas**. Se você não consegue focar em 5 coisas, não conseguirá focar em nada.
+O **5task** é um gerenciador de tarefas minimalista e gamificado, desenhado sob o princípio da **Priorização Radical**. Em um mundo de distrações infinitas, o 5task impõe um limite físico de apenas **5 tarefas simultâneas**. 
 
-O app utiliza a figura de **Albert Einstein** como seu mentor quântico, reagindo ao seu fluxo de trabalho e oferecendo insights motivacionais baseados em seu progresso.
+Na versão **v76 (Quantum Engine)**, elevamos a experiência com um sistema de temas dinâmicos, priorização visual e uma fluidez de interface digna das leis da relatividade.
 
-## ✨ Funcionalidades Principais
+## ✨ Funcionalidades Principais (Atualizado v76)
 
-- **🛡️ Limite Quântico:** Sistema bloqueia a criação de mais de 5 tarefas para forçar o foco no que é essencial.
-- **👨‍🔬 Mentoria de Einstein:** Avatar dinâmico que muda de expressão (Feliz, Pensativo, Animado, Preocupado) conforme o estado da sua lista.
-- **📋 Quadro Kanban Integrado:** Cada tarefa principal pode ser expandida em um micro-gerenciamento com colunas *A Fazer*, *Andamento* e *Concluído*.
-- **💾 Persistência Offline (Offline First):** Utiliza **IndexedDB** para salvar dados localmente no navegador, garantindo que você nunca perca suas notas, mesmo sem internet.
-- **📱 PWA (Progressive Web App):** Instalável no Android e iOS como um aplicativo nativo, com carregamento instantâneo via Service Workers.
-- **🔄 Drag & Drop:** Reorganize suas prioridades facilmente arrastando os cards das tarefas.
-- **⚡ Interface Neon-Noir:** Design escuro e moderno com toques neon para reduzir a fadiga visual e aumentar a imersão.
+- **🛡️ Limite Quântico:** O sistema bloqueia a criação de mais de 5 tarefas para garantir que sua energia mental não se disperse.
+- **🌗 Dual Theme Engine:** Alternância instantânea entre **Modo Escuro (Neon-Noir)** e **Modo Claro (High-Contrast)**, com ajustes automáticos de legibilidade e contraste.
+- **🔝 Fluxo de Inserção Inteligente:** Novas tarefas são automaticamente adicionadas ao topo da lista, focando no que é imediato.
+- **🚥 Matriz de Prioridade:** Classificação visual para decisões rápidas:
+  *   🔴 **URGENTE:** Atenção imediata necessária.
+  *   🟡 **ATENÇÃO:** Requer cuidado especial.
+  *   ⚫ **CRÍTICO:** Item vital para ser resolvido no dia.
+- **🎨 Sistema de Destaque Colorido:** Personalize seus cards com 3 cores base (Ciano, Roxo e Rosa) para organizar visualmente categorias de trabalho.
+- **✨ Smooth Motion (Drag & Drop):** Reordenação intuitiva com animações fluidas. Ao mover uma tarefa, o ecossistema de tarefas se ajusta suavemente.
+- **📋 Micro-Kanban Integrado:** Cada tarefa principal possui seu próprio quadro de planejamento (A Fazer, Fazendo, Concluído).
+- **💾 Offline-First (IndexedDB):** Seus dados são salvos localmente no "Quantum Storage" do navegador, funcionando perfeitamente sem internet.
+- **📱 PWA Nativo:** Instalável em Android e iOS, com suporte a Service Workers para carregamento instantâneo.
 
-## 🛠️ Tecnologias Utilizadas
+## 🛠️ Tecnologias de Ponta
 
-- **[React](https://react.dev/):** Biblioteca para interfaces de usuário modernas e reativas.
-- **[Tailwind CSS](https://tailwindcss.com/):** Framework CSS utilitário para design responsivo e animações fluidas.
-- **[Lucide React](https://lucide.dev/):** Conjunto de ícones leves e elegantes.
-- **[IndexedDB](https://developer.mozilla.org/pt-BR/docs/Web/API/IndexedDB_API):** Banco de dados local robusto para armazenamento permanente.
-- **[Service Workers](https://developer.mozilla.org/pt-BR/docs/Web/API/Service_Worker_API):** Tecnologia para cache inteligente e funcionamento offline.
+- **[React 19](https://react.dev/):** A fundação para uma interface reativa e ultra-veloz.
+- **[Tailwind CSS](https://tailwindcss.com/):** Design responsivo com utilitários customizados para efeitos Neon e Vidro (Glassmorphism).
+- **[Lucide React](https://lucide.dev/):** Ícones vetoriais modernos para uma navegação limpa.
+- **[IndexedDB API](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API):** Banco de dados persistente no lado do cliente.
 
-## ⚙️ Instalação Local
+## ⚙️ Instalação e Execução
 
 1.  **Clone o repositório:**
     ```bash
     git clone https://github.com/gillemosai/5task.git
     cd 5task
     ```
-
 2.  **Instale as dependências:**
     ```bash
     npm install
     ```
-
-3.  **Inicie o ambiente de desenvolvimento:**
+3.  **Inicie o motor:**
     ```bash
     npm run dev
     ```
 
-4.  **Verifique os Assets:**
-    Certifique-se de que a pasta `assets/` contenha os arquivos:
-    - `5task-logo.png`
-    - `einstein-happy.png`
-    - `einstein-skeptical.png`
-    - `einstein-ecstatic.png`
-    - `einstein-worried.png`
-
 ## 🗺️ Roadmap de Evolução
 
-- [x] Limite de 5 tarefas e Gamificação inicial.
+- [x] Limite de 5 tarefas e Gamificação com Einstein.
 - [x] Persistência local com IndexedDB.
-- [x] Suporte completo a PWA.
 - [x] Micro-Kanban por tarefa.
-- [ ] ☁️ Sincronização opcional com Cloud (Firebase).
-- [ ] 🔔 Notificações Push para lembretes de tarefas paradas.
-- [ ] 📊 Dashboard de Produtividade Quântica.
+- [x] Sistema de Temas Claro/Escuro (v76).
+- [x] Priorização Colorida e Reordenação Animada (v76).
+- [ ] ☁️ Sincronização em nuvem (Firebase Integration).
+- [ ] 📊 Relatórios de Produtividade Quântica (Insights Semanais).
 
 ---
+
+<p align="center">
+  <strong>⚠️ Aviso de Integridade:</strong> A pasta <code>assets/</code> contém recursos binários essenciais protegidos. Não modifique os arquivos de imagem para garantir a consistência da experiência visual.
+</p>
 
 <p align="center">
   Desenvolvido com 💜 por <strong>Gil Lemos</strong>
