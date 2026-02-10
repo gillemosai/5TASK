@@ -8,12 +8,12 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>5task</title>
     
-    <!-- Preloads estratégicos v72 -->
-    <link rel="preload" as="image" href="https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png?v=72">
+    <!-- Preloads estratégicos v73 -->
+    <link rel="preload" as="image" href="https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png?v=73">
     
-    <link rel="manifest" href="./manifest.json?v=72" />
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png?v=72" />
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png?v=72" />
+    <link rel="manifest" href="./manifest.json?v=73" />
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png?v=73" />
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png?v=73" />
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -101,13 +101,13 @@
         <div class="relative w-24 h-24 mb-6">
           <div class="absolute inset-0 border-4 border-neon-blue/20 rounded-full animate-spin-slow"></div>
           <div class="absolute inset-0 border-t-4 border-neon-purple rounded-full animate-spin"></div>
-          <img src="https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png?v=72" 
+          <img src="https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png?v=73" 
                class="absolute inset-4 w-16 h-16 object-contain animate-pulse-fast" alt="Logo">
         </div>
         <h1 class="text-2xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-purple">
           5TASK
         </h1>
-        <p class="mt-4 text-[9px] font-mono text-slate-600 uppercase tracking-[0.3em]">Quantum Engine v72 Stable</p>
+        <p class="mt-4 text-[9px] font-mono text-slate-600 uppercase tracking-[0.3em]">Quantum Engine v73 Stable</p>
       </div>
     </div>
     
@@ -122,7 +122,7 @@
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('SW v72 Active'))
+            .then(reg => console.log('SW v73 Active'))
             .catch(err => console.warn('PWA Sync disabled:', err.message));
         });
       }

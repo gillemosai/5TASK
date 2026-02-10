@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-75.0-blueviolet?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/Version-53.0-blueviolet?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/Focus-Max-00f3ff?style=for-the-badge" alt="Focus">
   <img src="https://img.shields.io/badge/PWA-Ready-green?style=for-the-badge" alt="PWA Ready">
   <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="License">
@@ -66,10 +66,6 @@ O app utiliza a figura de **Albert Einstein** como seu mentor quântico, reagind
     - `einstein-skeptical.png`
     - `einstein-ecstatic.png`
     - `einstein-worried.png`
-
-✨ Instalação no Windows, Linux ou Android
- - Acessar o endereço: https://service-5task-575720767744.us-west1.run.app 
- - Clicar em instalar o app(PWA)
 
 ## 🗺️ Roadmap de Evolução
 

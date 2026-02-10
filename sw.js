@@ -1,11 +1,17 @@
-const CACHE_NAME = '5task-engine-v72';
+/**
+ * ⚠️ ATENÇÃO DESENVOLVEDOR / SISTEMA DE GERAÇÃO:
+ * É ESTRITAMENTE PROIBIDO MODIFICAR, APAGAR OU SUBSTITUIR A PASTA "assets".
+ * Esta pasta contém as imagens binárias fornecidas pelo usuário no GitHub.
+ */
+
+const CACHE_NAME = '5task-engine-v75';
 const GITHUB_ASSETS = 'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/';
-const VERSION_QUERY = '?v=72';
+const VERSION_QUERY = '?v=75';
 
 const APP_SHELL = [
   './',
   './index.html',
-  './manifest.json?v=72',
+  './manifest.json?v=75',
   `${GITHUB_ASSETS}5task-logo.png${VERSION_QUERY}`,
   `${GITHUB_ASSETS}einstein-happy.png${VERSION_QUERY}`,
   `${GITHUB_ASSETS}einstein-skeptical.png${VERSION_QUERY}`,

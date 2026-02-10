@@ -1,6 +1,13 @@
 import { Mood, QuoteType } from './types';
 
-const VERSION_QUERY = '?v=72';
+/**
+ * ⚠️ REGRA CRÍTICA DE DESENVOLVIMENTO (INSTRUÇÃO AO SISTEMA):
+ * É TERMINANTEMENTE PROIBIDO ALTERAR, APAGAR OU SOBRESCREVER A PASTA "assets".
+ * Esta pasta no GitHub contém os recursos visuais binários essenciais.
+ * NÃO MODIFICAR ESTA PASTA EM NENHUM DEPLOY.
+ */
+
+const VERSION_QUERY = '?v=75';
 const GITHUB_BASE = 'https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/';
 
 export const AVATAR_IMAGES: Record<Mood, string> = {

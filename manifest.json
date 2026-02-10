@@ -2,7 +2,7 @@
   "name": "5task - Foco Simples",
   "short_name": "5task",
   "description": "Um gerenciador de tarefas focado com limite de 5 itens e a genialidade de Einstein.",
-  "id": "5task-pwa-v72",
+  "id": "5task-pwa-v73",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#020617",
@@ -11,7 +11,7 @@
   "categories": ["productivity", "utilities"],
   "icons": [
     {
-      "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png?v=72",
+      "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png?v=73",
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any maskable"
@@ -24,7 +24,7 @@
       "description": "Adicionar uma nova tarefa rapidamente",
       "url": "./index.html?action=new",
       "icons": [{ 
-        "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png?v=72", 
+        "src": "https://raw.githubusercontent.com/gillemosai/5TASK/main/assets/5task-logo.png?v=73", 
         "sizes": "1024x1024",
         "type": "image/png"
       }]
